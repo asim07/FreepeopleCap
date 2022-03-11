@@ -1,0 +1,51 @@
+{
+	"compiler": {
+		"version": "0.8.12+commit.f00d7308"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/FreePeopleCap.sol": "FreePeopleca"
+		},
+		"evmVersion": "london",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/FreePeopleCap.sol": {
+			"keccak256": "0x825ab7b9866da32ce1ccaf6ab7f2e7b99c76bf19ff049a8aff779fce3cdc63da",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://961de27cf6848ce0de5540e9101c7a9cf8942632ea8b687fa9bf2fa3827fc755",
+				"dweb:/ipfs/QmbjThZicdVB2rwznrfYZNwehZJstwWkSUmGyfobMybaXB"
+			]
+		}
+	},
+	"version": 1
+}
