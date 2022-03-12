@@ -58,7 +58,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/Migrations.sol": "Migrations"
+			"Migrations.sol": "Migrations"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -72,7 +72,7 @@
 		"remappings": []
 	},
 	"sources": {
-		"contracts/Migrations.sol": {
+		"Migrations.sol": {
 			"keccak256": "0x7eaedbb1a3e4e0f585d9063393872f88ded247ca3c3c3c8492ea18e7629a6411",
 			"license": "MIT",
 			"urls": [

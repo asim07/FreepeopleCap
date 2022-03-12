@@ -154,7 +154,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/FreePeopleCap.sol": "FreePeopleCap"
+			"FreePeopleCap.sol": "FreePeopleCap"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -168,15 +168,15 @@
 		"remappings": []
 	},
 	"sources": {
-		"contracts/FreePeopleCap.sol": {
-			"keccak256": "0x1f7e2d9da1f2ae1e351b0b3751f8cf8b9b7ea5961cbe950a0df4fb98f02ce38a",
+		"FreePeopleCap.sol": {
+			"keccak256": "0x78663abfa8ff0c841c729a8aa45765a527d74d97adad554b4a704b5a87e9f704",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://809b38bebda44167d7cdc2d38d2f1a482f481321c3e589c2fcd28e18a1ac4ad7",
-				"dweb:/ipfs/QmP2cQDAAiYvj2N4TcczexzRF5MncYZR62DbeZp2qQWqmX"
+				"bzz-raw://be8bd3072ee3f8812db025e5b97938a1368d14f74dda73b1294afc7bd4e96393",
+				"dweb:/ipfs/QmdTuRjFdP6vdwHFVjf6iuwLu7cAw8QSzsEagkZeHmpRD2"
 			]
 		},
-		"contracts/Interfaces/IPangolinRouter.sol": {
+		"Interfaces/IPangolinRouter.sol": {
 			"keccak256": "0x67fa620618767493525f12a7558584fc58ea5fe53d574f249456e5279f0c3e2e",
 			"license": "MIT",
 			"urls": [
