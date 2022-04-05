@@ -1,0 +1,59 @@
+{
+	"compiler": {
+		"version": "0.8.0+commit.c7dfd78e"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "applier",
+						"type": "address"
+					}
+				],
+				"name": "getstatus",
+				"outputs": [],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"Interfaces/Itreasury.sol": "Itreasury"
+		},
+		"evmVersion": "istanbul",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"Interfaces/Itreasury.sol": {
+			"keccak256": "0xed2457d821de90f2ab95e7489b5d9d184b4ceee727153639fa98b493d26f797d",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://f33cc475456e99845cb2aac4bdff3c8ccf279d8a1dc7d89139da8dff61dc3882",
+				"dweb:/ipfs/QmWa8XsZrtUtobE6qvefazqL4tXiEaNVN61AmidKbkEBhk"
+			]
+		}
+	},
+	"version": 1
+}
