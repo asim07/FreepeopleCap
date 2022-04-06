@@ -54,11 +54,9 @@ Counters.Counter private Approved_Appeals;
     // event AppealforFund(Appeal _appeal);
     constructor(address[] memory _ad){
         require(_ad.length ==7,'invalid length');
-        for(uint i=0;i<=_ad.length;i++){
+        for(uint8 i=0;i<_ad.length;i++){
             signers[_ad[i]] = true;
         }
-        console.log("Treasury Contract Deployed");
-
     }
     // function Appeal() public {}
     function appealforFund(uint _amount,string memory _purpose) external  onlySigners returns(bool){

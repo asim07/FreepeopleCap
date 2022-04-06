@@ -11,16 +11,13 @@ describe("Treasury", () => {
   let signer6;
   let signer7;
   let signer8;
+  let addresses;
 
   beforeEach(async () => {
-   
-  });
-
-  describe("security checks", async() => {
     Token = await ethers.getContractFactory("Treasury");
     [signer1, signer2, signer3, signer4, signer5, signer6, signer7, signer8] =
       await ethers.getSigners();
-    const addresses = [
+    addresses = [
       signer1.address,
       signer2.address,
       signer3.address,
@@ -31,28 +28,33 @@ describe("Treasury", () => {
     ];
     Token = await Token.deploy(addresses);
     await Token.deployed();
+  });
+
+  describe("security checks", () => {
     //test 1
     it("should set the signers correctly", async () => {
-      expect(await Token.isSigner(signer1.address)).to.equal(true);
-      expect(await Token.isSigner(signer2.address)).to.equal(true);
-      expect(await Token.isSigner(signer3.address)).to.equal(true);
-      expect(await Token.isSigner(signer4.address)).to.equal(true);
-      expect(await Token.isSigner(signer5.address)).to.equal(true);
-      expect(await Token.isSigner(signer6.address)).to.equal(true);
-      expect(await Token.isSigner(signer7.address)).to.equal(true);
-      expect(await Token.isSigner(signer8.address)).to.equal(false);
+      for (i = 0; i < addresses.length; i++) {
+        if (i > 6) {
+          expect(await Token.isSigner(addresses[i])).to.equal(false);
+        } else {
+          expect(await Token.isSigner(addresses[i])).to.equal(true);
+        }
+      }
     });
 
     //test2
     it("only signer can apply for funds", async () => {
-     await expect( Token.connect(signer8).appealforFund(10000,"Applying for funds")).to.be.revertedWith("caller is not signer");
-    })
+      await expect(
+        Token.connect(signer8).appealforFund(10000, "Applying for funds")
+      ).to.be.revertedWith("caller is not signer");
+    });
     //test3
     it("signer cant Appeal for funds more than 1 at once", async () => {
-      await expect( Token.connect(signer8).appealforFund(10000,"Applying for funds")).to.be.revertedWith("");
-     })
+      await expect(
+        Token.connect(signer8).appealforFund(10000, "Applying for funds")
+      ).to.be.revertedWith("caller is not signer");
+    });
     //test4
-
   });
 });
 // describe("Greeter", function () {
