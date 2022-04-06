@@ -47,22 +47,22 @@ Counters.Counter private Approved_Appeals;
         //history of funds used by adress
         mapping(address => uint[]) private fundHistory;
 
+        //signers active appeals
+        mapping(address => bool) private inProgress;
+
     //event for applying Appeal
     // event AppealforFund(Appeal _appeal);
-    constructor(){
-        signers[msg.sender] = true;
-        signers[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2] = true;
-        signers[0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db] = true;
-        signers[0x617F2E2fD72FD9D5503197092aC168c91465E7f2] = true;
-        signers[0x17F6AD8Ef982297579C203069C1DbfFE4348c372] = true;
-        signers[0x5c6B0f7Bf3E7ce046039Bd8FABdfD3f9F5021678] = true;
-        signers[0x1aE0EA34a72D944a8C7603FfB3eC30a6669E454C] = true;
-        console.log("hello");
+    constructor(address[] memory _ad){
+        require(_ad.length ==7,'invalid length');
+        for(uint i=0;i<=_ad.length;i++){
+            signers[_ad[i]] = true;
+        }
+        console.log("Treasury Contract Deployed");
 
     }
     // function Appeal() public {}
-    function appealforFund(uint _amount,string memory _purpose) external onlySigners{
-
+    function appealforFund(uint _amount,string memory _purpose) external  onlySigners returns(bool){
+        require(!inProgress[msg.sender],"Appeal already In progress");
         bytes memory data = string_tobytes(_purpose);
         number_of_Appeals.increment();
         Appeal storage a = appeals[number_of_Appeals.current()];
@@ -74,6 +74,8 @@ Counters.Counter private Approved_Appeals;
         a.purpose = data;
         a.status = Status.INPROGRESS;
         user_Appeals[msg.sender].push(number_of_Appeals.current());
+        inProgress[msg.sender] = true;
+        return true;
         // appeals[number_of_Appeals] =  Appeal(msg.sender,_amount,0,0,0,data,Status.INPROGRESS);
         // emit AppealforFund( appeals[number_of_Appeals]);
     }
@@ -123,12 +125,15 @@ Counters.Counter private Approved_Appeals;
     function finalize(uint i) internal onlySigners {
         if(appeals[i].positive_votes >=5){
             appeals[i].status = Status.ACCEPTED;
-            Denied_Appeals.increment();
+            Approved_Appeals.increment();
         }
         if(appeals[i].negative_votes >=3){
             appeals[i].status = Status.REJECTED;
-            Approved_Appeals.increment(); 
+            Denied_Appeals.increment(); 
         }
+
+    delete inProgress[appeals[i].ad];
+
     }
 
     //fetch user appeals
@@ -185,6 +190,10 @@ Counters.Counter private Approved_Appeals;
         return fundHistory[_ad];
     }
 
+    //is signer
+    function isSigner(address _ad) public view returns(bool){
+        return signers[_ad];
+    }
     // modifier to check the transaction
     modifier onlySigners{
         require(signers[msg.sender],"caller is not signer");
