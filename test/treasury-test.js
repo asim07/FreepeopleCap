@@ -48,13 +48,55 @@ describe("Treasury", () => {
         Token.connect(signer8).appealforFund(10000, "Applying for funds")
       ).to.be.revertedWith("caller is not signer");
     });
+
     //test3
     it("signer cant Appeal for funds more than 1 at once", async () => {
+      Token.connect(signer1).appealforFund(10000, "Applying for funds");
       await expect(
-        Token.connect(signer8).appealforFund(10000, "Applying for funds")
-      ).to.be.revertedWith("caller is not signer");
+        Token.connect(signer1).appealforFund(10000, "Applying for funds")
+      ).to.be.revertedWith("Appeal already In progress");
     });
+
     //test4
+    it("Signer cant vote its own compain", async () => {
+      await Token.connect(signer1).appealforFund(10000, "Applying for funds");
+      let value = await Token.UserAppeals(signer1.address);
+      value = value.toString();
+      await expect(
+        Token.connect(signer1).AllocationVote(parseInt(value))
+      ).to.be.revertedWith("cant vote yourself");
+    });
+
+    //test5
+    it("Signer can only approve or reject Appeal once", async () => {
+      await Token.connect(signer1).appealforFund(10000, "Applying for funds");
+      let value = await Token.UserAppeals(signer1.address);
+      value = value.toString();
+      await Token.connect(signer2).AllocationVote(parseInt(value));
+      await expect(
+        Token.connect(signer2).AllocationVote(parseInt(value))
+      ).to.be.revertedWith("Vote is Already Casted");
+    });
+
+//test6
+it("cant vote on finished Appeal", async () => {
+  await Token.connect(signer1).appealforFund(10000, "Applying for funds");
+  let value = await Token.UserAppeals(signer1.address);
+  value = value.toString();
+  await Token.connect(signer2).AllocationVote(parseInt(value));
+  await Token.connect(signer3).AllocationVote(parseInt(value));
+  await Token.connect(signer4).AllocationVote(parseInt(value));
+  await Token.connect(signer5).AllocationVote(parseInt(value));
+  await Token.connect(signer6).AllocationVote(parseInt(value));
+  await expect(
+    Token.connect(signer7).denyVote(parseInt(value))
+  ).to.be.revertedWith("Appeal finished");
+});
+
+//test7 
+
+
+
   });
 });
 // describe("Greeter", function () {
