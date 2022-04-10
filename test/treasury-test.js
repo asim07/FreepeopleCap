@@ -1,8 +1,9 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-describe("Treasury", () => {
+describe("Treasury", async() => {
   let Token;
+  let Dai;
   let signer1;
   let signer2;
   let signer3;
@@ -12,6 +13,7 @@ describe("Treasury", () => {
   let signer7;
   let signer8;
   let addresses;
+
 
   beforeEach(async () => {
     Token = await ethers.getContractFactory("Treasury");
@@ -26,7 +28,11 @@ describe("Treasury", () => {
       signer6.address,
       signer7.address,
     ];
-    Token = await Token.deploy(addresses);
+
+    Dai = await ethers.getContractFactory("Dai");
+    Dai = await Dai.deploy();
+    await Dai.deployed();
+    Token = await Token.deploy(addresses,Dai.address);
     await Token.deployed();
   });
 
@@ -44,6 +50,7 @@ describe("Treasury", () => {
 
     //test2
     it("only signer can apply for funds", async () => {
+      await Dai.connect(signer1).mint(Token.address,1000000);
       await expect(
         Token.connect(signer8).appealforFund(10000, "Applying for funds")
       ).to.be.revertedWith("caller is not signer");
@@ -51,6 +58,7 @@ describe("Treasury", () => {
 
     //test3
     it("signer cant Appeal for funds more than 1 at once", async () => {
+      await Dai.connect(signer1).mint(Token.address,1000000);
       Token.connect(signer1).appealforFund(10000, "Applying for funds");
       await expect(
         Token.connect(signer1).appealforFund(10000, "Applying for funds")
@@ -59,6 +67,7 @@ describe("Treasury", () => {
 
     //test4
     it("Signer cant vote its own compain", async () => {
+      await Dai.connect(signer1).mint(Token.address,1000000);
       await Token.connect(signer1).appealforFund(10000, "Applying for funds");
       let value = await Token.UserAppeals(signer1.address);
       value = value.toString();
@@ -69,6 +78,7 @@ describe("Treasury", () => {
 
     //test5
     it("Signer can only approve or reject Appeal once", async () => {
+      await Dai.connect(signer1).mint(Token.address,1000000);
       await Token.connect(signer1).appealforFund(10000, "Applying for funds");
       let value = await Token.UserAppeals(signer1.address);
       value = value.toString();
@@ -80,6 +90,7 @@ describe("Treasury", () => {
 
 //test6
 it("cant vote on finished Appeal", async () => {
+  await Dai.connect(signer1).mint(Token.address,1000000);
   await Token.connect(signer1).appealforFund(10000, "Applying for funds");
   let value = await Token.UserAppeals(signer1.address);
   value = value.toString();
@@ -94,24 +105,45 @@ it("cant vote on finished Appeal", async () => {
 });
 
 //test7 
+it("only appealer can withdraw  funds, After approval", async () => {
+  await Dai.connect(signer1).mint(Token.address,1000000);
+  await Token.connect(signer1).appealforFund(10000, "Applying for funds");
+  let value = await Token.UserAppeals(signer1.address);
+  value = value.toString();
+  await Token.connect(signer2).AllocationVote(parseInt(value));
+  await Token.connect(signer3).AllocationVote(parseInt(value));
+  await Token.connect(signer4).AllocationVote(parseInt(value));
+  await Token.connect(signer5).AllocationVote(parseInt(value));
+  await Token.connect(signer6).AllocationVote(parseInt(value));
+  await expect(
+    Token.connect(signer7).withdrawFunds(signer1.address)
+  ).to.be.revertedWith("No funds");
+});
 
+//test8
+it("requested amount should be available", async () => {
+  await Dai.connect(signer1).mint(Token.address,1000000);
 
+  await expect( Token.connect(signer1).appealforFund(100000000000, "Applying for funds")).to.be.revertedWith("no funds");;
+});
 
   });
+  describe("Functionalities", function () {
+    it("Signer should withdraw funds after approval", async function () {
+    await Dai.connect(signer1).mint(Token.address,1000000);
+    await Token.connect(signer1).appealforFund(10000, "Applying for funds");
+    let value = await Token.UserAppeals(signer1.address);
+    value = value.toString();
+    await Token.connect(signer2).AllocationVote(parseInt(value));
+    await Token.connect(signer3).AllocationVote(parseInt(value));
+    await Token.connect(signer4).AllocationVote(parseInt(value));
+    await Token.connect(signer5).AllocationVote(parseInt(value));
+    await Token.connect(signer6).AllocationVote(parseInt(value));
+    await Token.connect(signer1).withdrawFunds(signer1.address);
+    expect( await
+      Dai.connect(signer1).balanceOf(signer1.address)
+    ).to.equal(10000);
+    });
+  });
+  
 });
-// describe("Greeter", function () {
-//   it("Should return the new greeting once it's changed", async function () {
-//     const Greeter = await ethers.getContractFactory("Greeter");
-//     const greeter = await Greeter.deploy("Hello, world!");
-//     await greeter.deployed();
-
-//     expect(await greeter.greet()).to.equal("Hello, world!");
-
-//     const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
-
-//     // wait until the transaction is mined
-//     await setGreetingTx.wait();
-
-//     expect(await greeter.greet()).to.equal("Hola, mundo!");
-//   });
-// });

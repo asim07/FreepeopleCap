@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.0;
+pragma solidity >=0.8.0;
 import "./Interfaces/Itreasury.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
@@ -66,6 +66,7 @@ Counters.Counter private Approved_Appeals;
     // function Appeal() public {}
     function appealforFund(uint _amount,string memory _purpose) external  onlySigners returns(bool){
         require(!inProgress[msg.sender],"Appeal already In progress");
+        require(_amount <=  availableFunds(),"no funds");
         bytes memory data = string_tobytes(_purpose);
         number_of_Appeals.increment();
         Appeal storage a = appeals[number_of_Appeals.current()];
@@ -130,13 +131,17 @@ Counters.Counter private Approved_Appeals;
         if(appeals[i].positive_votes >=5){
             appeals[i].status = Status.ACCEPTED;
             Approved_Appeals.increment();
+            allocatedAmount[appeals[i].ad] = appeals[i].amount;
+            delete inProgress[appeals[i].ad];
+
         }
         if(appeals[i].negative_votes >=3){
             appeals[i].status = Status.REJECTED;
-            Denied_Appeals.increment(); 
+            Denied_Appeals.increment();
+            delete inProgress[appeals[i].ad];
+
         }
 
-    delete inProgress[appeals[i].ad];
 
     }
 
@@ -198,6 +203,7 @@ Counters.Counter private Approved_Appeals;
     function isSigner(address _ad) public view returns(bool){
         return signers[_ad];
     }
+    
     // modifier to check the transaction
     modifier onlySigners{
         require(signers[msg.sender],"caller is not signer");
@@ -205,7 +211,6 @@ Counters.Counter private Approved_Appeals;
     }
 
     //function to with drawfunds
-
     function withdrawFunds(address _ad) public onlySigners returns(bool){
         require(allocatedAmount[msg.sender]>0,"No funds");
         require(availableFunds() >= allocatedAmount[msg.sender],"Funds not available");
