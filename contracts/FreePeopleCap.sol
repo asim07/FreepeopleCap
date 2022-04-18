@@ -11,7 +11,8 @@
 //   //IPangolin Interface to point the contract with address 
 //   IPangolinRouter private router;
 //   address private pangolin;  
-//   address  private vault = 0x043Fe51F898e3bf716963A2218b619DB1ea845D2;
+//   address  public vault = 0x043Fe51F898e3bf716963A2218b619DB1ea845D2;
+//   IERC20 Dai = IERC20(0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846); 
 
 //   //Pangolin Test network address : 0x2d99abd9008dc933ff5c0cd271b88309593ab921
 //   constructor(address _router) {
@@ -39,11 +40,12 @@
 //           require(msg.value >0,"Awax amount cannot be zero");
 //           require(_path.length ==2,"Invalid path");
 //          // require(_deadline > block.timestamp,"Deadline should be greater than current time");
-//         uint tax = calculateTax(msg.value);
-//         uint  _amountIn = msg.value - tax;
+//         uint  _amountIn = msg.value;
 //         uint[] memory calculations = getAmountsOut(_amountIn,_path);
-//         amounts = router.swapAVAXForExactTokens{value : msg.value - tax}(calculations[1],_path,msg.sender,block.timestamp + 2 minutes);
-//         payable(vault).transfer(calculateTax(msg.value));
+//         amounts = router.swapAVAXForExactTokens{value : msg.value}(calculations[1],_path,address(this),block.timestamp + 2 minutes);
+//         uint tax = calculateTax(calculations[1]);
+//         Dai.transfer(msg.sender,calculations[1]-tax);
+//         Dai.transfer(vault,tax);
 //         }
 
 //     function swapTokensForExactTokens(uint _amountIn, address[] calldata _path, uint _deadline)
@@ -62,7 +64,7 @@
 //         token.transfer(vault,tax);
 //         }
 
-//     function calculateTax(uint256 _amountIn) public returns(uint256 taxAmount){
+//     function calculateTax(uint256 _amountIn) public pure returns(uint256 taxAmount){
 //           return _amountIn/1000 * 6;
 //     }    
 
@@ -81,8 +83,8 @@
 // // ["0xd00ae08403B9bbb9124bB305C09058E32C39A48c","0xe24C1B5e02fae85786aaB1E381EF3Ea97fedd901"]
 
 
-// // test apth for gen to link
-// //["0xd00ae08403B9bbb9124bB305C09058E32C39A48c","0xe24C1B5e02fae85786aaB1E381EF3Ea97fedd901"]
+// // test apth for awax to link
+// //["0xd00ae08403B9bbb9124bB305C09058E32C39A48c","0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846"]
 
 
 // // test path for swapping tokens with tokens

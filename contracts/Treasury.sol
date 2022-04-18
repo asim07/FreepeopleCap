@@ -30,6 +30,11 @@ Counters.Counter private Approved_Appeals;
             mapping(address => bool) isCasted;
         }
 
+        //restriction of funds to consume
+        struct fundAllowcation {
+            address ad;
+        }
+
         //Dai
         IERC20 public Dai;
 
@@ -37,7 +42,7 @@ Counters.Counter private Approved_Appeals;
         //mapping to save each address Appeal
         mapping(address => uint[]) private user_Appeals;
 
-        //mappin to save All Appeals
+        //mapping to save All Appeals
         mapping(uint => Appeal) private appeals;
 
         //addresses of signers
@@ -51,6 +56,9 @@ Counters.Counter private Approved_Appeals;
 
         //signers active appeals
         mapping(address => bool) private inProgress;
+
+        //active appeals
+        mapping(address => uint) private activeAppeal;
 
     // event AppealforFund(Appeal _appeal);
 
@@ -79,6 +87,7 @@ Counters.Counter private Approved_Appeals;
         a.status = Status.INPROGRESS;
         user_Appeals[msg.sender].push(number_of_Appeals.current());
         inProgress[msg.sender] = true;
+        activeAppeal[msg.sender] = number_of_Appeals.current();
         return true;
     }
     
@@ -101,7 +110,7 @@ Counters.Counter private Approved_Appeals;
     }
 
 
-    //cast votes
+    //cast vote to accept
     function AllocationVote(uint i) external onlySigners {
         require(appeals[i].status == Status.INPROGRESS,"Appeal finished");
         require(appeals[i].isCasted[msg.sender] == false,"Vote is Already Casted");
@@ -113,7 +122,7 @@ Counters.Counter private Approved_Appeals;
     }
 
 
-    //cast votes
+    //cast vote to deny
     function denyVote(uint i) external onlySigners {
         require(appeals[i].status == Status.INPROGRESS,"Appeal finished");
         require(appeals[i].isCasted[msg.sender] == false,"Vote is Already Casted");
@@ -133,12 +142,14 @@ Counters.Counter private Approved_Appeals;
             Approved_Appeals.increment();
             allocatedAmount[appeals[i].ad] = appeals[i].amount;
             delete inProgress[appeals[i].ad];
+            delete activeAppeal[appeals[i].ad];
 
         }
         if(appeals[i].negative_votes >=3){
             appeals[i].status = Status.REJECTED;
             Denied_Appeals.increment();
             delete inProgress[appeals[i].ad];
+            delete activeAppeal[appeals[i].ad];
 
         }
 
