@@ -68,7 +68,7 @@ describe("Treasury", async () => {
     it("Signer cant vote its own compain", async () => {
       await Dai.connect(signer1).mint(Token.address, 1000000);
       await Token.connect(signer1).appealforFund(10000, "Applying for funds");
-      let value = await Token.UserAppeals(signer1.address);
+      let value = await Token.userActiveAppeal(signer1.address);
       value = value.toString();
       await expect(
         Token.connect(signer1).AllocationVote(parseInt(value))
@@ -79,7 +79,7 @@ describe("Treasury", async () => {
     it("Signer can only approve or reject Appeal once", async () => {
       await Dai.connect(signer1).mint(Token.address, 1000000);
       await Token.connect(signer1).appealforFund(10000, "Applying for funds");
-      let value = await Token.UserAppeals(signer1.address);
+      let value = await Token.userActiveAppeal(signer1.address);
       value = value.toString();
       await Token.connect(signer2).AllocationVote(parseInt(value));
       await expect(
@@ -91,7 +91,7 @@ describe("Treasury", async () => {
     it("cant vote on finished Appeal", async () => {
       await Dai.connect(signer1).mint(Token.address, 1000000);
       await Token.connect(signer1).appealforFund(10000, "Applying for funds");
-      let value = await Token.UserAppeals(signer1.address);
+      let value = await Token.userActiveAppeal(signer1.address);
       value = value.toString();
       await Token.connect(signer2).AllocationVote(parseInt(value));
       await Token.connect(signer3).AllocationVote(parseInt(value));
@@ -107,7 +107,7 @@ describe("Treasury", async () => {
     it("only appealer can withdraw  funds, After approval", async () => {
       await Dai.connect(signer1).mint(Token.address, 1000000);
       await Token.connect(signer1).appealforFund(10000, "Applying for funds");
-      let value = await Token.UserAppeals(signer1.address);
+      let value = await Token.userActiveAppeal(signer1.address);
       value = value.toString();
       await Token.connect(signer2).AllocationVote(parseInt(value));
       await Token.connect(signer3).AllocationVote(parseInt(value));
@@ -133,7 +133,7 @@ describe("Treasury", async () => {
     it("Signer should withdraw funds after approval", async function () {
       await Dai.connect(signer1).mint(Token.address, 1000000);
       await Token.connect(signer1).appealforFund(10000, "Applying for funds");
-      let value = await Token.UserAppeals(signer1.address);
+      let value = await Token.userActiveAppeal(signer1.address);
       value = value.toString();
       await Token.connect(signer2).AllocationVote(parseInt(value));
       await Token.connect(signer3).AllocationVote(parseInt(value));
@@ -150,7 +150,7 @@ describe("Treasury", async () => {
     it("Signer cant withdraw funds again", async function () {
       await Dai.connect(signer1).mint(Token.address, 1000000);
       await Token.connect(signer1).appealforFund(10000, "Applying for funds");
-      let value = await Token.UserAppeals(signer1.address);
+      let value = await Token.userActiveAppeal(signer1.address);
       value = value.toString();
       await Token.connect(signer2).AllocationVote(parseInt(value));
       await Token.connect(signer3).AllocationVote(parseInt(value));
@@ -167,7 +167,7 @@ describe("Treasury", async () => {
     it("signer cant deny vote after the rejection of appeal", async function () {
       await Dai.connect(signer1).mint(Token.address, 1000000);
       await Token.connect(signer1).appealforFund(10000, "Applying for funds");
-      let value = await Token.UserAppeals(signer1.address);
+      let value = await Token.userActiveAppeal(signer1.address);
       value = value.toString();
       await Token.connect(signer2).denyVote(parseInt(value));
       await Token.connect(signer3).denyVote(parseInt(value));
@@ -183,7 +183,7 @@ describe("Treasury", async () => {
     it("2 appeals cant be in progress on each time", async function () {
       await Dai.connect(signer1).mint(Token.address, 1000000);
       await Token.connect(signer1).appealforFund(10000, "Applying for funds");
-      let value = await Token.UserAppeals(signer1.address);
+      let value = await Token.userActiveAppeal(signer1.address);
       value = value.toString();
       await Token.connect(signer2).denyVote(parseInt(value));
       await Token.connect(signer3).denyVote(parseInt(value));
@@ -223,28 +223,44 @@ describe("Treasury", async () => {
         10000,
         "Applying for usecase 7"
       );
-     
     });
-      //test 4
-      it("multiple signers can withdraw funds after the opproval", async function () {
-        await Dai.connect(signer1).mint(Token.address, 100000000000);
-        await Token.connect(signer1).appealforFund(100, "Applying for funds");
-        let value = await Token.UserAppeals(signer1.address);
-        value = value.toString();
-        await Token.connect(signer2).AllocationVote(parseInt(value));
-        await Token.connect(signer3).AllocationVote(parseInt(value));
-        await Token.connect(signer4).AllocationVote(parseInt(value));
-        await Token.connect(signer5).AllocationVote(parseInt(value));
-        await Token.connect(signer6).AllocationVote(parseInt(value));
-        await Token.connect(signer1).withdrawFunds(signer1.address);
-        
-         expect(await Dai.balanceOf(signer1.address)).to.equal(100);
-  
-        await expect(
-          Token.connect(signer5).denyVote(parseInt(value))
-        ).to.be.revertedWith("Appeal finished");
-      });
-    
+    //test 4
+    it("multiple signers can withdraw funds after the approval", async function () {
+      await Dai.connect(signer1).mint(Token.address, 200);
+      await Token.connect(signer1).appealforFund(100, "Applying for funds");
+      let value = await Token.userActiveAppeal(signer1.address);
+      console.log("user 1 appeal num : ",value);
 
+      value = value.toString();
+      await Token.connect(signer2).AllocationVote(parseInt(value));
+      await Token.connect(signer3).AllocationVote(parseInt(value));
+      await Token.connect(signer4).AllocationVote(parseInt(value));
+      await Token.connect(signer5).AllocationVote(parseInt(value));
+      await Token.connect(signer6).AllocationVote(parseInt(value));
+      await Token.connect(signer1).withdrawFunds(signer1.address);
+
+      // expect(await Dai.balanceOf(signer1.address)).to.equal(100);
+
+     await Token.connect(signer2).appealforFund(100,"second Appeal");
+      value =  await Token.userActiveAppeal(signer2.address);
+      console.log("user 2 appeal num : ",value);
+      value = value.toString();
+      await Token.connect(signer1).AllocationVote(parseInt(value));
+      await Token.connect(signer3).AllocationVote(parseInt(value));
+      await Token.connect(signer4).AllocationVote(parseInt(value));
+      await Token.connect(signer5).AllocationVote(parseInt(value));
+      await Token.connect(signer6).AllocationVote(parseInt(value));
+
+      // await Token.connect(signer2).withdrawFunds(signer2.address);
+       balance = await Token.allocatedFund(signer2.address);
+      console.log(balance);
+      await Token.connect(signer2).withdrawFunds(signer2.address);
+      expect(await Dai.balanceOf(signer2.address)).to.equal(100);
+
+
+      // await expect(
+      //   Token.connect(signer5).denyVote(parseInt(value))
+      // ).to.be.revertedWith("Appeal finished");
+    });
   });
 });

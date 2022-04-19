@@ -82,7 +82,6 @@ Counters.Counter private Approved_Appeals;
         a.amount = _amount;
         a.positive_votes = 0;
         a.negative_votes = 0;
-        a.totalVotes = 0;
         a.purpose = data;
         a.status = Status.INPROGRESS;
         user_Appeals[msg.sender].push(number_of_Appeals.current());
@@ -96,10 +95,9 @@ Counters.Counter private Approved_Appeals;
             uint amount,
             uint8 positive_votes,
             uint8 negative_votes,
-            uint8 totalVotes,
             bytes memory purpose,
             Status status){
-        return (appeals[i].ad,appeals[i].amount,appeals[i].positive_votes,appeals[i].negative_votes,appeals[i].totalVotes,appeals[i].purpose,appeals[i].status);
+        return (appeals[i].ad,appeals[i].amount,appeals[i].positive_votes,appeals[i].negative_votes,appeals[i].purpose,appeals[i].status);
     }
 
 
@@ -116,7 +114,6 @@ Counters.Counter private Approved_Appeals;
         require(appeals[i].isCasted[msg.sender] == false,"Vote is Already Casted");
         require(appeals[i].ad != msg.sender,"cant vote yourself");
         appeals[i].positive_votes++;
-        appeals[i].totalVotes++;
         appeals[i].isCasted[msg.sender] = true;
         finalize(i);
     }
@@ -129,7 +126,6 @@ Counters.Counter private Approved_Appeals;
         require(appeals[i].ad != msg.sender,"cant vote yourself");
 
         appeals[i].negative_votes++;
-        appeals[i].totalVotes++;
         appeals[i].isCasted[msg.sender] = true;
         finalize(i);
 
@@ -137,7 +133,7 @@ Counters.Counter private Approved_Appeals;
 
     //finalize the auction
     function finalize(uint i) internal onlySigners {
-        if(appeals[i].positive_votes >=5){
+        if(appeals[i].positive_votes >4){
             appeals[i].status = Status.ACCEPTED;
             Approved_Appeals.increment();
             allocatedAmount[appeals[i].ad] = appeals[i].amount;
@@ -145,7 +141,7 @@ Counters.Counter private Approved_Appeals;
             delete activeAppeal[appeals[i].ad];
 
         }
-        if(appeals[i].negative_votes >=3){
+        if(appeals[i].negative_votes >2){
             appeals[i].status = Status.REJECTED;
             Denied_Appeals.increment();
             delete inProgress[appeals[i].ad];
@@ -174,9 +170,11 @@ Counters.Counter private Approved_Appeals;
         return active;
     }
 
+    //active appeals
+
      //rejected Appeals
     function rejectedAppeals() public view returns(uint[] memory){
-        uint[] memory active = new uint[](number_of_Appeals.current() - Denied_Appeals.current() - Approved_Appeals.current());
+        uint[] memory active = new uint[](Denied_Appeals.current());
         uint counter = 0;
         for(uint i=1;i<=number_of_Appeals.current();i++){
             if(appeals[i].status == Status.REJECTED){
@@ -187,9 +185,9 @@ Counters.Counter private Approved_Appeals;
         return active;
     }
 
-       //rejected Appeals
+       //Approved Appeals
     function ApprovedAppeals() public view returns(uint[] memory){
-        uint[] memory active = new uint[](number_of_Appeals.current() - Denied_Appeals.current() - Approved_Appeals.current());
+        uint[] memory active = new uint[](Approved_Appeals.current());
         uint counter = 0;
         for(uint i=1;i<=number_of_Appeals.current();i++){
             if(appeals[i].status == Status.ACCEPTED){
@@ -223,7 +221,7 @@ Counters.Counter private Approved_Appeals;
 
     //function to with drawfunds
     function withdrawFunds(address _ad) public onlySigners returns(bool){
-        require(allocatedAmount[msg.sender]>0,"No funds");
+        require(allocatedAmount[msg.sender]>0,"No funds..");
         require(availableFunds() >= allocatedAmount[msg.sender],"Funds not available");
         fundHistory[msg.sender].push(allocatedAmount[msg.sender]);
         Dai.transfer(_ad,allocatedAmount[msg.sender]);
@@ -236,7 +234,10 @@ Counters.Counter private Approved_Appeals;
         return Dai.balanceOf(address(this));
     }
 
-    //
+    //active appeal of address
+    function userActiveAppeal(address _ad) public view returns(uint _id){
+        return activeAppeal[_ad];
+    }
 
     // Function to receive Awax. msg.data must be empty
     receive() external payable {}
@@ -244,3 +245,5 @@ Counters.Counter private Approved_Appeals;
     // Fallback function is called when msg.data is not empty
     fallback() external payable {}
 }
+
+//["0x5B38Da6a701c568545dCfcB03FcB875f56beddC4","0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2","0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db","0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB","0x617F2E2fD72FD9D5503197092aC168c91465E7f2","0x17F6AD8Ef982297579C203069C1DbfFE4348c372","0x5c6B0f7Bf3E7ce046039Bd8FABdfD3f9F5021678"]
