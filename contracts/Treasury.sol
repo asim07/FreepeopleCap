@@ -31,8 +31,9 @@ Counters.Counter private Approved_Appeals;
         }
 
         //restriction of funds to consume
-        struct fundAllowcation {
-            address ad;
+        struct fundAllocation {
+            uint amount;
+            uint timestamp;
         }
 
         //Dai
@@ -49,7 +50,7 @@ Counters.Counter private Approved_Appeals;
         mapping(address => bool) private signers;
 
         //allocated funds
-        mapping(address => uint) private allocatedAmount;
+        mapping(address => fundAllocation) private allocatedAmount;
 
         //history of funds used by adress
         mapping(address => uint[]) private fundHistory;
@@ -74,7 +75,7 @@ Counters.Counter private Approved_Appeals;
     // function Appeal() public {}
     function appealforFund(uint _amount,string memory _purpose) external  onlySigners returns(bool){
         require(!inProgress[msg.sender],"Appeal already In progress");
-        require(_amount <=  availableFunds(),"no funds");
+        require(_amount <=  TreasuryAvailableFudns(),"no funds");
         bytes memory data = string_tobytes(_purpose);
         number_of_Appeals.increment();
         Appeal storage a = appeals[number_of_Appeals.current()];
@@ -136,7 +137,8 @@ Counters.Counter private Approved_Appeals;
         if(appeals[i].positive_votes >4){
             appeals[i].status = Status.ACCEPTED;
             Approved_Appeals.increment();
-            allocatedAmount[appeals[i].ad] = appeals[i].amount;
+            allocatedAmount[appeals[i].ad].amount = appeals[i].amount;
+            allocatedAmount[appeals[i].ad].timestamp = block.timestamp + 2 minutes;
             delete inProgress[appeals[i].ad];
             delete activeAppeal[appeals[i].ad];
 
@@ -200,7 +202,11 @@ Counters.Counter private Approved_Appeals;
 
     //check address allocations
     function allocatedFund(address _ad) public view returns(uint){
-        return allocatedAmount[_ad];
+        return allocatedAmount[_ad].amount;
+    }
+    //remaining time to consume funds
+    function remainingTime(address _ad) public view returns(uint){
+        return allocatedAmount[_ad].timestamp;
     }
 
     //check consumed funds
@@ -220,17 +226,23 @@ Counters.Counter private Approved_Appeals;
     }
 
     //function to with drawfunds
-    function withdrawFunds(address _ad) public onlySigners returns(bool){
-        require(allocatedAmount[msg.sender]>0,"No funds..");
-        require(availableFunds() >= allocatedAmount[msg.sender],"Funds not available");
-        fundHistory[msg.sender].push(allocatedAmount[msg.sender]);
-        Dai.transfer(_ad,allocatedAmount[msg.sender]);
+    function withdrawFunds(address _ad,uint _amount) public onlySigners returns(bool){
+        uint timestamp = allocatedAmount[msg.sender].timestamp;
+        require(block.timestamp >= timestamp,"funds locked");
+        uint availableFunds = allocatedAmount[msg.sender].amount;
+        require(availableFunds > 0 && _amount <= availableFunds,"No funds..");
+        require(TreasuryAvailableFudns() >= _amount,"Funds not available");
+        allocatedAmount[msg.sender].amount =  allocatedAmount[msg.sender].amount - _amount;
+        fundHistory[msg.sender].push(_amount);
+        Dai.transfer(_ad,_amount);
+        if(allocatedAmount[msg.sender].amount == 0){   
         delete allocatedAmount[msg.sender];
+        }
         return true;
     }
 
     //available funds
-    function availableFunds() public view returns(uint){
+    function TreasuryAvailableFudns() public view returns(uint){
         return Dai.balanceOf(address(this));
     }
 
