@@ -138,7 +138,7 @@ Counters.Counter private Approved_Appeals;
             appeals[i].status = Status.ACCEPTED;
             Approved_Appeals.increment();
             allocatedAmount[appeals[i].ad].amount = appeals[i].amount;
-            allocatedAmount[appeals[i].ad].timestamp = block.timestamp + 2 minutes;
+            allocatedAmount[appeals[i].ad].timestamp = block.timestamp + 0 minutes;
             delete inProgress[appeals[i].ad];
             delete activeAppeal[appeals[i].ad];
 
