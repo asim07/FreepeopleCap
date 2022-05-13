@@ -156,9 +156,6 @@ describe("Treasury", async () => {
       await Token.connect(signer2).withdrawFunds(signer2.address, 100);
       expect(await Dai.balanceOf(signer2.address)).to.equal(100);
 
-      // await expect(
-      //   Token.connect(signer5).denyVote(parseInt(value))
-      // ).to.be.revertedWith("Appeal finished");
     });
   });
 });
