@@ -9,13 +9,23 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "./interfaces/IPangolinPair.sol";
 import "./interfaces/IPangolinFactory.sol";
 
-contract MyToken is ERC20, ERC20Burnable, ERC20Snapshot, Ownable, Pausable {
+contract test1 is ERC20, ERC20Burnable, ERC20Snapshot, Ownable, Pausable {
 
     address Pair;
-    uint sellTax = 20;
-    uint buyTax = 20;
-    constructor() ERC20("MyToken", "MTK") {        
+    uint sellTax = 2;
+    uint buyTax = 2;
+
+    address dev;
+    address market;
+    address liquidity;
+    address charity;
+
+    constructor(address _dev,address _market,address _liquidity,address _charity) ERC20("test1", "test") {        
         _mint(msg.sender,100000000000 * 10**18);
+        dev = _dev;
+        charity = _charity;
+        liquidity = _liquidity;
+        market = _market;
     }
 
     uint maxTransactionLimit = 100;
@@ -44,12 +54,14 @@ contract MyToken is ERC20, ERC20Burnable, ERC20Snapshot, Ownable, Pausable {
         require(to != address(0), "ERC20: transfer to the zero address");
         uint taxAmount;
 
-        if(to == address(Pair) ) {
-            taxAmount  = amount * sellTax / 100;
-        } else if (from == address(Pair)){
-            taxAmount  = amount * buyTax / 100;
-        }
 
+        // if(to == address(Pair) ) {
+        //     taxAmount  = amount * sellTax / 100;
+        // } else if (from == address(Pair)){
+        //     taxAmount  = amount * buyTax / 100;
+        // }
+        taxAmount  = amount * buyTax / 100;
+        dev = taxAmount * 
         amount = amount - taxAmount; 
         super._transfer(from, 0x99cd5fB151f0e00c75A748A3ec70B3bc4587E316, taxAmount); // get tax collected 
         super._transfer(from, to, amount);

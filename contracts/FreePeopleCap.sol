@@ -14,7 +14,7 @@ contract FreePeopleCap {
   address  public vault = 0x043Fe51F898e3bf716963A2218b619DB1ea845D2;
   IERC20 Dai = IERC20(0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846); 
 
-  //Pangolin Test network address : 0x2d99abd9008dc933ff5c0cd271b88309593ab921
+  //Pangolin Test network address
   constructor(address _router) {
   router = IPangolinRouter(_router);
   pangolin = _router;

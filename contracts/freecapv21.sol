@@ -833,22 +833,9 @@ contract Token is ERC20, Pausable {
    
     uint256 private denominator = 100;
 
-    // uint256 private swapThreshold = 0.0000005 ether; // The contract will only swap to ETH, once the fee tokens reach the specified threshold
+    uint buyTax;
+    uint sellTax;
     
-    uint256 private devTaxBuy;
-    uint256 private marketingTaxBuy;
-    uint256 private liquidityTaxBuy;
-    uint256 private charityTaxBuy;
-    
-    uint256 private devTaxSell;
-    uint256 private marketingTaxSell;
-    uint256 private liquidityTaxSell;
-    uint256 private charityTaxSell;
-    
-    address private devTaxWallet;
-    address private marketingTaxWallet;
-    address private liquidityTaxWallet;
-    address private charityTaxWallet;
     
     // CONFIG END
     
@@ -889,30 +876,29 @@ contract Token is ERC20, Pausable {
      "0x732f290301abAEB7e7319691fCfcD42aa753D314",
      ]
 
-["0x5D4A71841fC8D9917e891AAb72e43E31593b3bEf","0x2D99ABD9008Dc933ff5c0CD271B88309593aB921","0x99cd5fB151f0e00c75A748A3ec70B3bc4587E316","0x043Fe51F898e3bf716963A2218b619DB1ea845D2","0x2197a49b8B8FAD21cCC60e662fcbe29683c0770C","0x732f290301abAEB7e7319691fCfcD42aa753D314"]
+["0x99cd5fB151f0e00c75A748A3ec70B3bc4587E316","0x043Fe51F898e3bf716963A2218b619DB1ea845D2","0x2197a49b8B8FAD21cCC60e662fcbe29683c0770C","0x5D4A71841fC8D9917e891AAb72e43E31593b3bEf"]
 
-[10,5,5,2,5,2,3,4]
+[1,1,1,1,1,1,1,1]
 
 
      */
 
-    constructor(string memory _tokenName,string memory _tokenSymbol,uint256 _supply,address[6] memory _addr,uint256[8] memory _value) ERC20(_tokenName, _tokenSymbol) payable
+    constructor(string memory _tokenName,string memory _tokenSymbol,uint256 _supply,address[4] memory _addr,uint256[8] memory _value) ERC20(_tokenName, _tokenSymbol)
     {   
-        owner = msg.sender;
         initialSupply =_supply * (10**18);
-        Router = IPangolinRouter(_addr[1]);
-        Factory = IPangolinFactory(Router.factory());
-        Pair = IPangolinPair(Factory.createPair(address(this),Router.WAVAX()));
-        taxWallets["liquidity"] = _addr[0];
         setBuyTax(_value[0], _value[1], _value[3], _value[2]);
         setSellTax(_value[4], _value[5], _value[7], _value[6]);
-        setTaxWallets(_addr[2], _addr[3], _addr[4]);
+        setTaxWallets(_addr[0], _addr[1], _addr[2],_addr[3]);
         exclude(msg.sender);
         exclude(address(this));
-        payable(_addr[0]).transfer(msg.value);
         _mint(msg.sender, initialSupply);
-        // _setOwner(_addr[5]);
 
+    }
+
+    function setLiquidityPair(address _router,address _secondpair) external onlyOwner {
+        Router = IPangolinRouter(_router);
+        Factory = IPangolinFactory(Router.factory());
+        Pair = IPangolinPair(Factory.createPair(address(this),_secondpair));
     }
 
     function mint(address to, uint amount) external onlyOwner {
@@ -927,112 +913,42 @@ contract Token is ERC20, Pausable {
     /**
      * @dev Calculates the tax, transfer it to the contract. If the user is selling, and the swap threshold is met, it executes the tax.
      */
-    function handleTax(address from, address to, uint256 amount) private returns (uint256) {
-        address[] memory sellPath = new address[](2);
-        sellPath[0] = address(this);
-        sellPath[1] = Router.WAVAX();
-        
-        if(!isExcluded(from) && !isExcluded(to)) {
-            uint256 tax;
-            uint256 baseUnit = amount / denominator;
-            if(from == address(Pair)) {
-                tax += baseUnit * buyTaxes["marketing"];
-                tax += baseUnit * buyTaxes["dev"];
-                tax += baseUnit * buyTaxes["liquidity"];
-                tax += baseUnit * buyTaxes["charity"];
-                
-                if(tax > 0) {
-                    _transfer(from, address(this), tax);   
-                }
-                
-                marketingTokens += baseUnit * buyTaxes["marketing"];
-                devTokens += baseUnit * buyTaxes["dev"];
-                liquidityTokens += baseUnit * buyTaxes["liquidity"];
-                charityTokens += baseUnit * buyTaxes["charity"];
-            } else if(to == address(Pair)) {
-                tax += baseUnit * sellTaxes["marketing"];
-                tax += baseUnit * sellTaxes["dev"];
-                tax += baseUnit * sellTaxes["liquidity"];
-                tax += baseUnit * sellTaxes["charity"];
-                
-                if(tax > 0) {
-                    _transfer(from, address(this), tax);   
-                }
-                
-                marketingTokens += baseUnit * sellTaxes["marketing"];
-                devTokens += baseUnit * sellTaxes["dev"];
-                liquidityTokens += baseUnit * sellTaxes["liquidity"];
-                charityTokens += baseUnit * sellTaxes["charity"];
-                
-                uint256 taxSum = marketingTokens + devTokens + liquidityTokens + charityTokens;
-                
-                if(taxSum == 0) return amount;
-                
-                // uint256 ethValue = Router.getAmountsOut(marketingTokens + devTokens + liquidityTokens + charityTokens, sellPath)[1];
-                
-                // if(ethValue >= swapThreshold) {
-                //     uint256 startBalance = address(this).balance;
-
-                //     uint256 toSell = marketingTokens + devTokens + liquidityTokens / 2 + charityTokens;
-                    
-                //     _approve(address(this), address(Router), toSell);
-            
-                //     Router.swapExactTokensForAVAX(
-                //         toSell,
-                //         0,
-                //         sellPath,
-                //         address(this),
-                //         block.timestamp
-                //     );
-                    
-                //     uint256 ethGained = address(this).balance - startBalance;
-                    
-                //     uint256 liquidityToken = liquidityTokens / 2;
-                //     uint256 liquidityAVAX = (ethGained * ((liquidityTokens / 2 * 10**18) / taxSum)) / 10**18;
-                    
-                //     uint256 marketingETH = (ethGained * ((marketingTokens * 10**18) / taxSum)) / 10**18;
-                //     uint256 devETH = (ethGained * ((devTokens * 10**18) / taxSum)) / 10**18;
-                //     uint256 charityETH = (ethGained * ((charityTokens * 10**18) / taxSum)) / 10**18;
-                    
-                //     _approve(address(this), address(Router), liquidityToken);
-                    
-                //     (uint amountToken, uint amountAVAX, uint liquidity) = Router.addLiquidityAVAX{value: liquidityAVAX}(
-                //         address(this),
-                //         liquidityToken,
-                //         0,
-                //         0,
-                //         taxWallets["liquidity"],
-                //         block.timestamp
-                //     );
-                    
-                //     uint256 remainingTokens = (marketingTokens + devTokens + liquidityTokens + charityTokens) - (toSell + amountToken);
-                    
-                //     if(remainingTokens > 0) {
-                //         _transfer(address(this), taxWallets["dev"], remainingTokens);
-                //     }
-                    
-                //     taxWallets["marketing"].call{value: marketingETH}("");
-                //     taxWallets["dev"].call{value: devETH}("");
-                //     taxWallets["charity"].call{value: charityETH}("");
-                    
-                //     if(ethGained - (marketingETH + devETH + liquidityAVAX + charityETH) > 0) {
-                //         taxWallets["marketing"].call{value: ethGained - (marketingETH + devETH + liquidityAVAX + charityETH)}("");
-                //     }
-                    
-                //     marketingTokens = 0;
-                //     devTokens = 0;
-                //     liquidityTokens = 0;
-                //     charityTokens = 0;
-                // }
-                
+    function handleTax(address from , address to , uint amount) internal  returns(uint){
+            uint taxAmount;
+            uint devTax;
+            uint marketTax;
+            uint liquidityTax;
+            uint charityTax;
+            if(from == address(Pair)){
+                taxAmount = amount * sellTax/denominator;
+                devTax = taxAmount * buyTaxes["dev"] /denominator;
+                marketTax =  taxAmount * buyTaxes["marketing"] /denominator;
+                liquidityTax = taxAmount * buyTaxes["liquidity"] /denominator;
+                charityTax = taxAmount * buyTaxes["charity"] /denominator;
+                super._transfer(from,taxWallets["dev"],devTax);
+                super._transfer(from,taxWallets["marketing"],marketTax);
+                super._transfer(from,taxWallets["liquidity"],liquidityTax);
+                super._transfer(from,taxWallets["charity"],charityTax);
+            amount -= devTax - marketTax - liquidityTax - charityTax;
             }
-            
-            amount -= tax;
-        }
-        
+            if(to == address(Pair)){
+                taxAmount = amount * buyTax/denominator;
+                devTax = taxAmount * sellTaxes["dev"] /denominator;
+                marketTax =  taxAmount * sellTaxes["marketing"] /denominator;
+                liquidityTax = taxAmount * sellTaxes["liquidity"] /denominator;
+                charityTax = taxAmount * sellTaxes["charity"] /denominator;
+                super._transfer(from,taxWallets["dev"],devTax);
+                super._transfer(from,taxWallets["marketing"],marketTax);
+                super._transfer(from,taxWallets["liquidity"],liquidityTax);
+                super._transfer(from,taxWallets["charity"],charityTax);
+                amount -= devTax - marketTax - liquidityTax - charityTax;
+            }
         return amount;
+            
     }
     
+    
+
     function _transfer(
         address sender,
         address recipient,
@@ -1141,10 +1057,11 @@ contract Token is ERC20, Pausable {
     /**
      * @dev Sets wallets for taxes.
      */
-    function setTaxWallets(address dev, address marketing, address charity) public onlyOwner {
+    function setTaxWallets(address dev, address marketing, address charity,address _liquidity) public onlyOwner {
         taxWallets["dev"] = dev;
         taxWallets["marketing"] = marketing;
         taxWallets["charity"] = charity;
+        taxWallets["liquidity"] = _liquidity;
     }
     
     /**
