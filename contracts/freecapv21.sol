@@ -495,6 +495,7 @@ abstract contract Ownable is Context {
      * @dev Initializes the contract setting the deployer as the initial owner.
      */
     constructor() {
+       
     }
 
     /**
@@ -825,7 +826,7 @@ interface IPangolinRouter {
 }
 
 
-contract Token is ERC20, Pausable {
+contract Token is ERC20,  Ownable , Pausable{
 
     // CONFIG START
     
@@ -833,8 +834,8 @@ contract Token is ERC20, Pausable {
    
     uint256 private denominator = 100;
 
-    uint buyTax;
-    uint sellTax;
+    uint buyTax = 30;
+    uint sellTax = 30;
     
     
     // CONFIG END
@@ -844,14 +845,14 @@ contract Token is ERC20, Pausable {
     
     mapping (string => uint256) private buyTaxes;
     mapping (string => uint256) private sellTaxes;
-    mapping (string => address) private taxWallets;
-    
+    mapping (string => address) private taxWallets; 
+
     bool public taxStatus = true;
     
     IPangolinRouter private Router;
     IPangolinFactory private Factory;
     IPangolinPair private Pair;    
-    address owner;
+    // address owner;
 
 
  /**
@@ -876,29 +877,28 @@ contract Token is ERC20, Pausable {
      "0x732f290301abAEB7e7319691fCfcD42aa753D314",
      ]
 
-["0x99cd5fB151f0e00c75A748A3ec70B3bc4587E316","0x043Fe51F898e3bf716963A2218b619DB1ea845D2","0x2197a49b8B8FAD21cCC60e662fcbe29683c0770C","0x5D4A71841fC8D9917e891AAb72e43E31593b3bEf"]
+["0x99cd5fB151f0e00c75A748A3ec70B3bc4587E316","0x043Fe51F898e3bf716963A2218b619DB1ea845D2","0x2197a49b8B8FAD21cCC60e662fcbe29683c0770C","0x5D4A71841fC8D9917e891AAb72e43E31593b3bEf","0x2D99ABD9008Dc933ff5c0CD271B88309593aB921"]
 
-[1,1,1,1,1,1,1,1]
+[25,25,25,25,25,25,25,25]
 
-
+IERC20 NOYz;
+Noyz = IERC20(address);
      */
 
-    constructor(string memory _tokenName,string memory _tokenSymbol,uint256 _supply,address[4] memory _addr,uint256[8] memory _value) ERC20(_tokenName, _tokenSymbol)
+    constructor(string memory _tokenName,string memory _tokenSymbol,uint256 _supply,address[5] memory _addr,uint256[8] memory _value) ERC20(_tokenName, _tokenSymbol)
     {   
+        _setOwner(msg.sender);
         initialSupply =_supply * (10**18);
-        setBuyTax(_value[0], _value[1], _value[3], _value[2]);
+        setBuyTax(_value[0], _value[1], _value[2], _value[3]);
         setSellTax(_value[4], _value[5], _value[7], _value[6]);
         setTaxWallets(_addr[0], _addr[1], _addr[2],_addr[3]);
         exclude(msg.sender);
         exclude(address(this));
+        // Router = IPangolinRouter(_addr[4]);
+        // Factory = IPangolinFactory(Router.factory());
+        // Pair = IPangolinPair(Factory.createPair(address(this),Router.WAVAX()));
         _mint(msg.sender, initialSupply);
 
-    }
-
-    function setLiquidityPair(address _router,address _secondpair) external onlyOwner {
-        Router = IPangolinRouter(_router);
-        Factory = IPangolinFactory(Router.factory());
-        Pair = IPangolinPair(Factory.createPair(address(this),_secondpair));
     }
 
     function mint(address to, uint amount) external onlyOwner {
@@ -911,7 +911,7 @@ contract Token is ERC20, Pausable {
     uint256 private charityTokens;
     
     /**
-     * @dev Calculates the tax, transfer it to the contract. If the user is selling, and the swap threshold is met, it executes the tax.
+     * @dev Calculates the tax, transfer it to the contract. If the user is selling it executes the tax.
      */
     function handleTax(address from , address to , uint amount) internal  returns(uint){
             uint taxAmount;
@@ -919,19 +919,19 @@ contract Token is ERC20, Pausable {
             uint marketTax;
             uint liquidityTax;
             uint charityTax;
-            if(from == address(Pair)){
-                taxAmount = amount * sellTax/denominator;
-                devTax = taxAmount * buyTaxes["dev"] /denominator;
-                marketTax =  taxAmount * buyTaxes["marketing"] /denominator;
-                liquidityTax = taxAmount * buyTaxes["liquidity"] /denominator;
-                charityTax = taxAmount * buyTaxes["charity"] /denominator;
-                super._transfer(from,taxWallets["dev"],devTax);
-                super._transfer(from,taxWallets["marketing"],marketTax);
-                super._transfer(from,taxWallets["liquidity"],liquidityTax);
-                super._transfer(from,taxWallets["charity"],charityTax);
-            amount -= devTax - marketTax - liquidityTax - charityTax;
-            }
-            if(to == address(Pair)){
+            // if(from == address(Pair)){
+            //     taxAmount = amount * sellTax/denominator;
+            //     devTax = taxAmount * buyTaxes["dev"] /denominator;
+            //     marketTax =  taxAmount * buyTaxes["marketing"] /denominator;
+            //     liquidityTax = taxAmount * buyTaxes["liquidity"] /denominator;
+            //     charityTax = taxAmount * buyTaxes["charity"] /denominator;
+            //     super._transfer(from,taxWallets["dev"],devTax);
+            //     super._transfer(from,taxWallets["marketing"],marketTax);
+            //     super._transfer(from,taxWallets["liquidity"],liquidityTax);
+            //     super._transfer(from,taxWallets["charity"],charityTax);
+            // amount -= devTax - marketTax - liquidityTax - charityTax;
+            // }
+            if(true){
                 taxAmount = amount * buyTax/denominator;
                 devTax = taxAmount * sellTaxes["dev"] /denominator;
                 marketTax =  taxAmount * sellTaxes["marketing"] /denominator;
@@ -949,6 +949,8 @@ contract Token is ERC20, Pausable {
     
     
 
+    function setBuyTax(uint _amount) public  onlyOwner {}
+
     function _transfer(
         address sender,
         address recipient,
@@ -959,18 +961,18 @@ contract Token is ERC20, Pausable {
         require(!isBlacklisted(recipient), "CoinToken: recipient blacklisted");
         require(!isBlacklisted(tx.origin), "CoinToken: sender blacklisted");
         
-        if(taxStatus) {
+        
             amount = handleTax(sender, recipient, amount);   
-        }
+    
         
         super._transfer(sender, recipient, amount);
     }
     
 
-    modifier onlyOwner{
-        require(msg.sender==owner);
-        _;
-    }
+    // modifier onlyOwner{
+    //     require(msg.sender==owner);
+    //     _;
+    // }
     /**
      * @dev Triggers the tax handling functionality
      */
@@ -1020,7 +1022,7 @@ contract Token is ERC20, Pausable {
     /**
      * @dev Excludes the specified account from tax.
      */
-    function exclude(address account) public onlyOwner {
+    function exclude(address account) public  {
         require(!isExcluded(account), "CoinToken: Account is already excluded");
         excludeList[account] = true;
     }
@@ -1036,11 +1038,11 @@ contract Token is ERC20, Pausable {
     /**
      * @dev Sets tax for buys.
      */
-    function setBuyTax(uint256 dev, uint256 marketing, uint256 liquidity, uint256 charity) public onlyOwner {
-        buyTaxes["dev"] = dev;
-        buyTaxes["marketing"] = marketing;
-        buyTaxes["liquidity"] = liquidity;
-        buyTaxes["charity"] = charity;
+    function setBuyTax(uint256 _dev, uint256 _marketing, uint256 _liquidity, uint256 _charity) public onlyOwner {
+        buyTaxes["dev"] = _dev;
+        buyTaxes["marketing"] = _marketing;
+        buyTaxes["liquidity"] = _liquidity;
+        buyTaxes["charity"] = _charity;
     }
     
     /**
