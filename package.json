@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.5.0",
-    "hardhat-interact": "^0.2.3"
+    "hardhat-interact": "^0.2.3",
+    "web3": "^1.7.3"
   }
 }

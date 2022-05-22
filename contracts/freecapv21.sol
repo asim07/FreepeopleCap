@@ -2,8 +2,6 @@
  *Submitted for verification at snowtrace.io on 2022-01-14
 */
 
-// SPDX-License-Identifier: MIT
-
 
 pragma solidity ^0.8.0;
 
@@ -825,17 +823,243 @@ interface IPangolinRouter {
     ) external;
 }
 
+// SPDX-License-Identifier: MIT
+// OpenZeppelin Contracts (last updated v4.6.0) (utils/math/SafeMath.sol)
 
-contract Token is ERC20,  Ownable , Pausable{
+pragma solidity ^0.8.0;
+
+// CAUTION
+// This version of SafeMath should only be used with Solidity 0.8 or later,
+// because it relies on the compiler's built in overflow checks.
+
+/**
+ * @dev Wrappers over Solidity's arithmetic operations.
+ *
+ * NOTE: `SafeMath` is generally not needed starting with Solidity 0.8, since the compiler
+ * now has built in overflow checking.
+ */
+library SafeMath {
+    /**
+     * @dev Returns the addition of two unsigned integers, with an overflow flag.
+     *
+     * _Available since v3.4._
+     */
+    function tryAdd(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+        unchecked {
+            uint256 c = a + b;
+            if (c < a) return (false, 0);
+            return (true, c);
+        }
+    }
+
+    /**
+     * @dev Returns the subtraction of two unsigned integers, with an overflow flag.
+     *
+     * _Available since v3.4._
+     */
+    function trySub(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+        unchecked {
+            if (b > a) return (false, 0);
+            return (true, a - b);
+        }
+    }
+
+    /**
+     * @dev Returns the multiplication of two unsigned integers, with an overflow flag.
+     *
+     * _Available since v3.4._
+     */
+    function tryMul(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+        unchecked {
+            // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
+            // benefit is lost if 'b' is also tested.
+            // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
+            if (a == 0) return (true, 0);
+            uint256 c = a * b;
+            if (c / a != b) return (false, 0);
+            return (true, c);
+        }
+    }
+
+    /**
+     * @dev Returns the division of two unsigned integers, with a division by zero flag.
+     *
+     * _Available since v3.4._
+     */
+    function tryDiv(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+        unchecked {
+            if (b == 0) return (false, 0);
+            return (true, a / b);
+        }
+    }
+
+    /**
+     * @dev Returns the remainder of dividing two unsigned integers, with a division by zero flag.
+     *
+     * _Available since v3.4._
+     */
+    function tryMod(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+        unchecked {
+            if (b == 0) return (false, 0);
+            return (true, a % b);
+        }
+    }
+
+    /**
+     * @dev Returns the addition of two unsigned integers, reverting on
+     * overflow.
+     *
+     * Counterpart to Solidity's `+` operator.
+     *
+     * Requirements:
+     *
+     * - Addition cannot overflow.
+     */
+    function add(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a + b;
+    }
+
+    /**
+     * @dev Returns the subtraction of two unsigned integers, reverting on
+     * overflow (when the result is negative).
+     *
+     * Counterpart to Solidity's `-` operator.
+     *
+     * Requirements:
+     *
+     * - Subtraction cannot overflow.
+     */
+    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a - b;
+    }
+
+    /**
+     * @dev Returns the multiplication of two unsigned integers, reverting on
+     * overflow.
+     *
+     * Counterpart to Solidity's `*` operator.
+     *
+     * Requirements:
+     *
+     * - Multiplication cannot overflow.
+     */
+    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a * b;
+    }
+
+    /**
+     * @dev Returns the integer division of two unsigned integers, reverting on
+     * division by zero. The result is rounded towards zero.
+     *
+     * Counterpart to Solidity's `/` operator.
+     *
+     * Requirements:
+     *
+     * - The divisor cannot be zero.
+     */
+    function div(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a / b;
+    }
+
+    /**
+     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
+     * reverting when dividing by zero.
+     *
+     * Counterpart to Solidity's `%` operator. This function uses a `revert`
+     * opcode (which leaves remaining gas untouched) while Solidity uses an
+     * invalid opcode to revert (consuming all remaining gas).
+     *
+     * Requirements:
+     *
+     * - The divisor cannot be zero.
+     */
+    function mod(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a % b;
+    }
+
+    /**
+     * @dev Returns the subtraction of two unsigned integers, reverting with custom message on
+     * overflow (when the result is negative).
+     *
+     * CAUTION: This function is deprecated because it requires allocating memory for the error
+     * message unnecessarily. For custom revert reasons use {trySub}.
+     *
+     * Counterpart to Solidity's `-` operator.
+     *
+     * Requirements:
+     *
+     * - Subtraction cannot overflow.
+     */
+    function sub(
+        uint256 a,
+        uint256 b,
+        string memory errorMessage
+    ) internal pure returns (uint256) {
+        unchecked {
+            require(b <= a, errorMessage);
+            return a - b;
+        }
+    }
+
+    /**
+     * @dev Returns the integer division of two unsigned integers, reverting with custom message on
+     * division by zero. The result is rounded towards zero.
+     *
+     * Counterpart to Solidity's `/` operator. Note: this function uses a
+     * `revert` opcode (which leaves remaining gas untouched) while Solidity
+     * uses an invalid opcode to revert (consuming all remaining gas).
+     *
+     * Requirements:
+     *
+     * - The divisor cannot be zero.
+     */
+    function div(
+        uint256 a,
+        uint256 b,
+        string memory errorMessage
+    ) internal pure returns (uint256) {
+        unchecked {
+            require(b > 0, errorMessage);
+            return a / b;
+        }
+    }
+
+    /**
+     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
+     * reverting with custom message when dividing by zero.
+     *
+     * CAUTION: This function is deprecated because it requires allocating memory for the error
+     * message unnecessarily. For custom revert reasons use {tryMod}.
+     *
+     * Counterpart to Solidity's `%` operator. This function uses a `revert`
+     * opcode (which leaves remaining gas untouched) while Solidity uses an
+     * invalid opcode to revert (consuming all remaining gas).
+     *
+     * Requirements:
+     *
+     * - The divisor cannot be zero.
+     */
+    function mod(
+        uint256 a,
+        uint256 b,
+        string memory errorMessage
+    ) internal pure returns (uint256) {
+        unchecked {
+            require(b > 0, errorMessage);
+            return a % b;
+        }
+    }
+}
+contract freecapv21 is ERC20,  Ownable , Pausable{
 
     // CONFIG START
-    
+    using SafeMath for uint;    
     uint256 private initialSupply;
    
     uint256 private denominator = 100;
 
-    uint buyTax = 30;
-    uint sellTax = 30;
+    uint buyTax = 5 ;
+    uint sellTax = 5;
     
     
     // CONFIG END
@@ -881,8 +1105,6 @@ contract Token is ERC20,  Ownable , Pausable{
 
 [25,25,25,25,25,25,25,25]
 
-IERC20 NOYz;
-Noyz = IERC20(address);
      */
 
     constructor(string memory _tokenName,string memory _tokenSymbol,uint256 _supply,address[5] memory _addr,uint256[8] memory _value) ERC20(_tokenName, _tokenSymbol)
@@ -904,7 +1126,6 @@ Noyz = IERC20(address);
     function mint(address to, uint amount) external onlyOwner {
         _mint(to,amount);
     }
-    
     uint256 private marketingTokens;
     uint256 private devTokens;
     uint256 private liquidityTokens;
@@ -913,25 +1134,25 @@ Noyz = IERC20(address);
     /**
      * @dev Calculates the tax, transfer it to the contract. If the user is selling it executes the tax.
      */
-    function handleTax(address from , address to , uint amount) internal  returns(uint){
+    function handleTax(address from , address to , uint amount) internal  {
             uint taxAmount;
             uint devTax;
             uint marketTax;
             uint liquidityTax;
             uint charityTax;
-            // if(from == address(Pair)){
-            //     taxAmount = amount * sellTax/denominator;
-            //     devTax = taxAmount * buyTaxes["dev"] /denominator;
-            //     marketTax =  taxAmount * buyTaxes["marketing"] /denominator;
-            //     liquidityTax = taxAmount * buyTaxes["liquidity"] /denominator;
-            //     charityTax = taxAmount * buyTaxes["charity"] /denominator;
-            //     super._transfer(from,taxWallets["dev"],devTax);
-            //     super._transfer(from,taxWallets["marketing"],marketTax);
-            //     super._transfer(from,taxWallets["liquidity"],liquidityTax);
-            //     super._transfer(from,taxWallets["charity"],charityTax);
-            // amount -= devTax - marketTax - liquidityTax - charityTax;
-            // }
-            if(true){
+            if(to == address(Pair)){
+                taxAmount = amount * sellTax/denominator;
+                devTax = taxAmount * buyTaxes["dev"] /denominator;
+                marketTax =  taxAmount * buyTaxes["marketing"] /denominator;
+                liquidityTax = taxAmount * buyTaxes["liquidity"] /denominator;
+                charityTax = taxAmount * buyTaxes["charity"] /denominator;
+                super._transfer(from,taxWallets["dev"],devTax);
+                super._transfer(from,taxWallets["marketing"],marketTax);
+                super._transfer(from,taxWallets["liquidity"],liquidityTax);
+                super._transfer(from,taxWallets["charity"],charityTax);
+                amount -= devTax - marketTax - liquidityTax - charityTax;
+            }
+            if(from == address(Pair)){
                 taxAmount = amount * buyTax/denominator;
                 devTax = taxAmount * sellTaxes["dev"] /denominator;
                 marketTax =  taxAmount * sellTaxes["marketing"] /denominator;
@@ -943,8 +1164,17 @@ Noyz = IERC20(address);
                 super._transfer(from,taxWallets["charity"],charityTax);
                 amount -= devTax - marketTax - liquidityTax - charityTax;
             }
-        return amount;
-            
+            if (true){
+
+                taxAmount = amount.mul(buyTax).div(100);
+                // devTax = amount * buyTaxes["dev"]/100;
+                // marketTax = amount * buyTaxes["marketing"]/100;
+                super._transfer(from,taxWallets["dev"],amount);
+                // super._transfer(from,taxWallets["marketing"],amount * buyTaxes["marketing"]/100);
+                amount -= taxAmount;
+                
+            }
+            super._transfer(from,to , amount);            
     }
     
     
@@ -961,11 +1191,18 @@ Noyz = IERC20(address);
         require(!isBlacklisted(recipient), "CoinToken: recipient blacklisted");
         require(!isBlacklisted(tx.origin), "CoinToken: sender blacklisted");
         
+        if(taxStatus){
+        handleTax(sender, recipient, amount);   
+
+        } else {
+            
+        super._transfer(sender, recipient, amount);
+
+        }
         
-            amount = handleTax(sender, recipient, amount);   
     
         
-        super._transfer(sender, recipient, amount);
+        // super._transfer(sender, recipient, amount);
     }
     
 
