@@ -838,216 +838,38 @@ pragma solidity ^0.8.0;
  * NOTE: `SafeMath` is generally not needed starting with Solidity 0.8, since the compiler
  * now has built in overflow checking.
  */
+pragma solidity >0.5.0;
+
 library SafeMath {
-    /**
-     * @dev Returns the addition of two unsigned integers, with an overflow flag.
-     *
-     * _Available since v3.4._
-     */
-    function tryAdd(uint256 a, uint256 b) internal pure returns (bool, uint256) {
-        unchecked {
-            uint256 c = a + b;
-            if (c < a) return (false, 0);
-            return (true, c);
+    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
+        if (a == 0) {
+            return 0;
         }
+        uint256 c = a * b;
+    assert(c / a == b);
+    return c;
     }
 
-    /**
-     * @dev Returns the subtraction of two unsigned integers, with an overflow flag.
-     *
-     * _Available since v3.4._
-     */
-    function trySub(uint256 a, uint256 b) internal pure returns (bool, uint256) {
-        unchecked {
-            if (b > a) return (false, 0);
-            return (true, a - b);
-        }
+    function div(uint256 a, uint256 b) internal pure returns (uint256) {
+        uint256 c = a / b;
+        return c;
     }
 
-    /**
-     * @dev Returns the multiplication of two unsigned integers, with an overflow flag.
-     *
-     * _Available since v3.4._
-     */
-    function tryMul(uint256 a, uint256 b) internal pure returns (bool, uint256) {
-        unchecked {
-            // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
-            // benefit is lost if 'b' is also tested.
-            // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
-            if (a == 0) return (true, 0);
-            uint256 c = a * b;
-            if (c / a != b) return (false, 0);
-            return (true, c);
-        }
-    }
-
-    /**
-     * @dev Returns the division of two unsigned integers, with a division by zero flag.
-     *
-     * _Available since v3.4._
-     */
-    function tryDiv(uint256 a, uint256 b) internal pure returns (bool, uint256) {
-        unchecked {
-            if (b == 0) return (false, 0);
-            return (true, a / b);
-        }
-    }
-
-    /**
-     * @dev Returns the remainder of dividing two unsigned integers, with a division by zero flag.
-     *
-     * _Available since v3.4._
-     */
-    function tryMod(uint256 a, uint256 b) internal pure returns (bool, uint256) {
-        unchecked {
-            if (b == 0) return (false, 0);
-            return (true, a % b);
-        }
-    }
-
-    /**
-     * @dev Returns the addition of two unsigned integers, reverting on
-     * overflow.
-     *
-     * Counterpart to Solidity's `+` operator.
-     *
-     * Requirements:
-     *
-     * - Addition cannot overflow.
-     */
-    function add(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a + b;
-    }
-
-    /**
-     * @dev Returns the subtraction of two unsigned integers, reverting on
-     * overflow (when the result is negative).
-     *
-     * Counterpart to Solidity's `-` operator.
-     *
-     * Requirements:
-     *
-     * - Subtraction cannot overflow.
-     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
+        assert(b <= a);
         return a - b;
     }
 
-    /**
-     * @dev Returns the multiplication of two unsigned integers, reverting on
-     * overflow.
-     *
-     * Counterpart to Solidity's `*` operator.
-     *
-     * Requirements:
-     *
-     * - Multiplication cannot overflow.
-     */
-    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a * b;
+    function add(uint256 a, uint256 b) internal pure returns (uint256) {
+        uint256 c = a + b;
+        assert(c >= a);
+        return c;
     }
 
-    /**
-     * @dev Returns the integer division of two unsigned integers, reverting on
-     * division by zero. The result is rounded towards zero.
-     *
-     * Counterpart to Solidity's `/` operator.
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a / b;
-    }
-
-    /**
-     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
-     * reverting when dividing by zero.
-     *
-     * Counterpart to Solidity's `%` operator. This function uses a `revert`
-     * opcode (which leaves remaining gas untouched) while Solidity uses an
-     * invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function mod(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a % b;
-    }
-
-    /**
-     * @dev Returns the subtraction of two unsigned integers, reverting with custom message on
-     * overflow (when the result is negative).
-     *
-     * CAUTION: This function is deprecated because it requires allocating memory for the error
-     * message unnecessarily. For custom revert reasons use {trySub}.
-     *
-     * Counterpart to Solidity's `-` operator.
-     *
-     * Requirements:
-     *
-     * - Subtraction cannot overflow.
-     */
-    function sub(
-        uint256 a,
-        uint256 b,
-        string memory errorMessage
-    ) internal pure returns (uint256) {
-        unchecked {
-            require(b <= a, errorMessage);
-            return a - b;
-        }
-    }
-
-    /**
-     * @dev Returns the integer division of two unsigned integers, reverting with custom message on
-     * division by zero. The result is rounded towards zero.
-     *
-     * Counterpart to Solidity's `/` operator. Note: this function uses a
-     * `revert` opcode (which leaves remaining gas untouched) while Solidity
-     * uses an invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function div(
-        uint256 a,
-        uint256 b,
-        string memory errorMessage
-    ) internal pure returns (uint256) {
-        unchecked {
-            require(b > 0, errorMessage);
-            return a / b;
-        }
-    }
-
-    /**
-     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
-     * reverting with custom message when dividing by zero.
-     *
-     * CAUTION: This function is deprecated because it requires allocating memory for the error
-     * message unnecessarily. For custom revert reasons use {tryMod}.
-     *
-     * Counterpart to Solidity's `%` operator. This function uses a `revert`
-     * opcode (which leaves remaining gas untouched) while Solidity uses an
-     * invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function mod(
-        uint256 a,
-        uint256 b,
-        string memory errorMessage
-    ) internal pure returns (uint256) {
-        unchecked {
-            require(b > 0, errorMessage);
-            return a % b;
-        }
+    function ceil(uint256 a, uint256 m) internal pure returns (uint256) {
+        uint256 c = add(a,m);
+        uint256 d = sub(c,1);
+        return mul(div(d,m),m);
     }
 }
 contract freecapv21 is ERC20,  Ownable , Pausable{
@@ -1060,24 +882,23 @@ contract freecapv21 is ERC20,  Ownable , Pausable{
 
     uint buyTax = 5 ;
     uint sellTax = 5;
-    
+    uint maxTransaction = 10 ether;
     
     // CONFIG END
     
     mapping (address => bool) private blacklist;
     mapping (address => bool) private excludeList;
-    
+    mapping (address => bool) private excludeMaxTransaction;
     mapping (string => uint256) private buyTaxes;
     mapping (string => uint256) private sellTaxes;
-    mapping (string => address) private taxWallets; 
+    mapping (string => address) private taxWallets;
 
-    bool public taxStatus = true;
+
+    bool public taxStatus = false;
     
     IPangolinRouter private Router;
     IPangolinFactory private Factory;
-    IPangolinPair private Pair;    
-    // address owner;
-
+    IPangolinPair public Pair;    
 
  /**
      * @dev Sets tax for sells.
@@ -1101,6 +922,10 @@ contract freecapv21 is ERC20,  Ownable , Pausable{
      "0x732f290301abAEB7e7319691fCfcD42aa753D314",
      ]
 
+
+freecap
+fpc
+100000000
 ["0x99cd5fB151f0e00c75A748A3ec70B3bc4587E316","0x043Fe51F898e3bf716963A2218b619DB1ea845D2","0x2197a49b8B8FAD21cCC60e662fcbe29683c0770C","0x5D4A71841fC8D9917e891AAb72e43E31593b3bEf","0x2D99ABD9008Dc933ff5c0CD271B88309593aB921"]
 
 [25,25,25,25,25,25,25,25]
@@ -1116,12 +941,15 @@ contract freecapv21 is ERC20,  Ownable , Pausable{
         setTaxWallets(_addr[0], _addr[1], _addr[2],_addr[3]);
         exclude(msg.sender);
         exclude(address(this));
-        // Router = IPangolinRouter(_addr[4]);
-        // Factory = IPangolinFactory(Router.factory());
-        // Pair = IPangolinPair(Factory.createPair(address(this),Router.WAVAX()));
+        excludeMaxTxt(msg.sender);
+        Router = IPangolinRouter(_addr[4]);
+        Factory = IPangolinFactory(Router.factory());
+        Pair = IPangolinPair(Factory.createPair(address(this),Router.WAVAX()));
         _mint(msg.sender, initialSupply);
 
     }
+
+    event check(uint amount ,uint remainingamount, uint taxAmount ,uint buytax);
 
     function mint(address to, uint amount) external onlyOwner {
         _mint(to,amount);
@@ -1140,41 +968,36 @@ contract freecapv21 is ERC20,  Ownable , Pausable{
             uint marketTax;
             uint liquidityTax;
             uint charityTax;
-            if(to == address(Pair)){
-                taxAmount = amount * sellTax/denominator;
-                devTax = taxAmount * buyTaxes["dev"] /denominator;
-                marketTax =  taxAmount * buyTaxes["marketing"] /denominator;
-                liquidityTax = taxAmount * buyTaxes["liquidity"] /denominator;
-                charityTax = taxAmount * buyTaxes["charity"] /denominator;
+            if(isExcludedTxt(msg.sender) || amount <=  maxTransaction){
+                if(to == address(Pair)){
+                taxAmount = (amount * sellTax) /denominator;
+                devTax = (taxAmount * sellTaxes["dev"]) /denominator;
+                marketTax =  (taxAmount * sellTaxes["marketing"]) /denominator;
+                liquidityTax = (taxAmount * sellTaxes["liquidity"]) /denominator;
+                charityTax = (taxAmount * sellTaxes["charity"])/denominator;
                 super._transfer(from,taxWallets["dev"],devTax);
                 super._transfer(from,taxWallets["marketing"],marketTax);
                 super._transfer(from,taxWallets["liquidity"],liquidityTax);
                 super._transfer(from,taxWallets["charity"],charityTax);
-                amount -= devTax - marketTax - liquidityTax - charityTax;
+                amount -= taxAmount;
             }
             if(from == address(Pair)){
-                taxAmount = amount * buyTax/denominator;
-                devTax = taxAmount * sellTaxes["dev"] /denominator;
-                marketTax =  taxAmount * sellTaxes["marketing"] /denominator;
-                liquidityTax = taxAmount * sellTaxes["liquidity"] /denominator;
-                charityTax = taxAmount * sellTaxes["charity"] /denominator;
+                taxAmount = (amount * buyTax)/denominator;
+                devTax = (taxAmount * buyTaxes["dev"] )/denominator;
+                marketTax =  (taxAmount * buyTaxes["marketing"]) /denominator;
+                liquidityTax = (taxAmount * buyTaxes["liquidity"]) /denominator;
+                charityTax = (taxAmount * buyTaxes["charity"]) /denominator;
                 super._transfer(from,taxWallets["dev"],devTax);
                 super._transfer(from,taxWallets["marketing"],marketTax);
                 super._transfer(from,taxWallets["liquidity"],liquidityTax);
                 super._transfer(from,taxWallets["charity"],charityTax);
-                amount -= devTax - marketTax - liquidityTax - charityTax;
-            }
-            if (true){
-
-                taxAmount = amount.mul(buyTax).div(100);
-                // devTax = amount * buyTaxes["dev"]/100;
-                // marketTax = amount * buyTaxes["marketing"]/100;
-                super._transfer(from,taxWallets["dev"],amount);
-                // super._transfer(from,taxWallets["marketing"],amount * buyTaxes["marketing"]/100);
                 amount -= taxAmount;
-                
             }
-            super._transfer(from,to , amount);            
+            super._transfer(from,to , amount);      
+            } else {
+                revert("FreepeopleCap: amount greater than limit");
+            }
+                  
     }
     
     
@@ -1186,24 +1009,26 @@ contract freecapv21 is ERC20,  Ownable , Pausable{
         address recipient,
         uint256 amount
     ) internal override virtual {
-        require(!paused(), "CoinToken: token transfer while paused");
-        require(!isBlacklisted(msg.sender), "CoinToken: sender blacklisted");
-        require(!isBlacklisted(recipient), "CoinToken: recipient blacklisted");
-        require(!isBlacklisted(tx.origin), "CoinToken: sender blacklisted");
-        
-        if(taxStatus){
-        handleTax(sender, recipient, amount);   
-
-        } else {
-            
-        super._transfer(sender, recipient, amount);
-
+        require(!paused(), "FreepeopleCap: token transfer while paused");
+        require(!isBlacklisted(msg.sender), "FreepeopleCap: sender blacklisted");
+        require(!isBlacklisted(recipient), "FreepeopleCap: recipient blacklisted");
+        require(!isBlacklisted(tx.origin), "FreepeopleCap: sender blacklisted");
+       
+            if(taxStatus){
+                  if(isExcluded(msg.sender)){
+                    super._transfer(sender,recipient,amount);
+                }else {
+                    handleTax(sender,recipient,amount);
+                }
+            }
+        else {
+            super._transfer(sender,recipient,amount);
         }
+       
+          
         
-    
-        
-        // super._transfer(sender, recipient, amount);
-    }
+        }
+   
     
 
     // modifier onlyOwner{
@@ -1221,7 +1046,7 @@ contract freecapv21 is ERC20,  Ownable , Pausable{
      * @dev Pauses transfers on the token.
      */
     function pause() public onlyOwner {
-        require(!paused(), "CoinToken: Contract is already paused");
+        require(!paused(), "FreepeopleCap: Contract is already paused");
         _pause();
     }
 
@@ -1229,7 +1054,7 @@ contract freecapv21 is ERC20,  Ownable , Pausable{
      * @dev Unpauses transfers on the token.
      */
     function unpause() public onlyOwner {
-        require(paused(), "CoinToken: Contract is not paused");
+        require(paused(), "FreepeopleCap: Contract is not paused");
         _unpause();
     }
     
@@ -1244,7 +1069,7 @@ contract freecapv21 is ERC20,  Ownable , Pausable{
      * @dev Blacklists the specified account (Disables transfers to and from the account).
      */
     function enableBlacklist(address account) public onlyOwner {
-        require(!blacklist[account], "CoinToken: Account is already blacklisted");
+        require(!blacklist[account], "FreepeopleCap: Account is already blacklisted");
         blacklist[account] = true;
     }
     
@@ -1252,7 +1077,7 @@ contract freecapv21 is ERC20,  Ownable , Pausable{
      * @dev Remove the specified account from the blacklist.
      */
     function disableBlacklist(address account) public onlyOwner {
-        require(blacklist[account], "CoinToken: Account is not blacklisted");
+        require(blacklist[account], "FreepeopleCap: Account is not blacklisted");
         blacklist[account] = false;
     }
     
@@ -1260,18 +1085,34 @@ contract freecapv21 is ERC20,  Ownable , Pausable{
      * @dev Excludes the specified account from tax.
      */
     function exclude(address account) public  {
-        require(!isExcluded(account), "CoinToken: Account is already excluded");
+        require(!isExcluded(account), "FreepeopleCap: Account is already excluded");
         excludeList[account] = true;
     }
     
+ /**
+     * @dev Excludes the specified account from tax.
+     */
+    function excludeMaxTxt(address account) public  {
+        require(!isExcludedTxt(account), "Freepeoplecap: Account is already excluded");
+        excludeList[account] = true;
+    }
+
     /**
      * @dev Re-enables tax on the specified account.
      */
     function removeExclude(address account) public onlyOwner {
-        require(isExcluded(account), "CoinToken: Account is not excluded");
+        require(isExcluded(account), "FreepeopleCap: Account is not excluded");
         excludeList[account] = false;
     }
     
+
+    /**
+     * @dev Re-enables maxlimit on the specified account.
+     */
+    function removeMaxtxt(address account) public onlyOwner {
+        require(isExcludedTxt(account), "FreepeopleCap: Account is not excluded");
+        excludeList[account] = false;
+    }
     /**
      * @dev Sets tax for buys.
      */
@@ -1307,7 +1148,7 @@ contract freecapv21 is ERC20,  Ownable , Pausable{
      * @dev Enables tax globally.
      */
     function enableTax() public onlyOwner {
-        require(!taxStatus, "CoinToken: Tax is already enabled");
+        require(!taxStatus, "FreepeopleCap: Tax is already enabled");
         taxStatus = true;
     }
     
@@ -1315,7 +1156,7 @@ contract freecapv21 is ERC20,  Ownable , Pausable{
      * @dev Disables tax globally.
      */
     function disableTax() public onlyOwner {
-        require(taxStatus, "CoinToken: Tax is already disabled");
+        require(taxStatus, "FreepeopleCap: Tax is already disabled");
         taxStatus = false;
     }
     
@@ -1331,6 +1172,12 @@ contract freecapv21 is ERC20,  Ownable , Pausable{
      */
     function isExcluded(address account) public view returns (bool) {
         return excludeList[account];
+    }
+/**
+     * @dev Returns true if the account is excluded from max txt, and false otherwise.
+     */
+    function isExcludedTxt(address account) public view returns (bool) {
+        return excludeMaxTransaction[account];
     }
     
     

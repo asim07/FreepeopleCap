@@ -26,7 +26,7 @@ describe("Treasury", async () => {
       signer6.address,
     ];
 
-    Token = await Token.deploy("freecap","fpc",100,addresses,[5,5,5,5,5,5,5,5]);
+    Token = await Token.deploy("freecap","fpc","10000000000000000",addresses,[25,25,25,25,25,25,25,25]);
     await Token.deployed();
   });
 
@@ -41,8 +41,8 @@ describe("Treasury", async () => {
       console.log("reciever : ",reciever);
       console.log("devtax : ",devtax);
       console.log("martax : ",martax);
-      console.log( await Token.connect(signer1).balanceOf(signer1.address)
-      )
+    //   console.log( await Token.connect(signer1).balanceOf(signer1.address)
+      
 
     });
   });
