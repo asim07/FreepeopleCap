@@ -942,9 +942,9 @@ fpc
         exclude(msg.sender);
         exclude(address(this));
         excludeMaxTxt(msg.sender);
-        Router = IPangolinRouter(_addr[4]);
-        Factory = IPangolinFactory(Router.factory());
-        Pair = IPangolinPair(Factory.createPair(address(this),Router.WAVAX()));
+        // Router = IPangolinRouter(_addr[4]);
+        // Factory = IPangolinFactory(Router.factory());
+        // Pair = IPangolinPair(Factory.createPair(address(this),Router.WAVAX()));
         _mint(msg.sender, initialSupply);
 
     }
@@ -1002,7 +1002,9 @@ fpc
     
     
 
-    function setBuyTax(uint _amount) public  onlyOwner {}
+    function setBuyTax(uint _amount) public  onlyOwner {
+        buyTax = _amount;
+    }
 
     function _transfer(
         address sender,
@@ -1022,7 +1024,12 @@ fpc
                 }
             }
         else {
+            if(isExcludedTxt(msg.sender) == true){
             super._transfer(sender,recipient,amount);
+
+            }else {
+                require(amount <= maxTransaction,"Greater than transaction");
+            }
         }
        
           
@@ -1030,17 +1037,6 @@ fpc
         }
    
     
-
-    // modifier onlyOwner{
-    //     require(msg.sender==owner);
-    //     _;
-    // }
-    /**
-     * @dev Triggers the tax handling functionality
-     */
-    function triggerTax() public onlyOwner {
-        handleTax(address(0), address(Pair), 0);
-    }
     
     /**
      * @dev Pauses transfers on the token.
@@ -1140,8 +1136,9 @@ fpc
     function setTaxWallets(address dev, address marketing, address charity,address _liquidity) public onlyOwner {
         taxWallets["dev"] = dev;
         taxWallets["marketing"] = marketing;
-        taxWallets["charity"] = charity;
         taxWallets["liquidity"] = _liquidity;
+        taxWallets["charity"] = charity;
+
     }
     
     /**
