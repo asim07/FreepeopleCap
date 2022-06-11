@@ -949,6 +949,10 @@ fpc
 
     }
 
+    function setPAir(address _ad) external onlyOwner {
+        Pair = IPangolinPair(_ad);
+    }
+
     event check(uint amount ,uint remainingamount, uint taxAmount ,uint buytax);
 
     function mint(address to, uint amount) external onlyOwner {
