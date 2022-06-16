@@ -13,6 +13,7 @@ contract Treasury is Ownable {
     Counters.Counter private number_of_Appeals;
     Counters.Counter private Denied_Appeals;
     Counters.Counter private Approved_Appeals;
+    Counters.Counter private number_of_signers;
 
     enum Status {
         INPROGRESS,
@@ -67,6 +68,7 @@ contract Treasury is Ownable {
         admin = _owner;
         for (uint8 i = 0; i < _ad.length; i++) {
             signers[_ad[i]] = true;
+            number_of_signers.increment();
         }
         Dai = IERC20(_dai);
         transferOwnership(_owner);
@@ -75,6 +77,7 @@ contract Treasury is Ownable {
       // function Appeal() public {}
     function appealforFund(uint _amount,bytes memory _purpose) external  onlyOwner returns(bool){
         require(inProgress[msg.sender]==0,"Appeal In progress");
+        require(number_of_signers.current() >0,"No signers");
         number_of_Appeals.increment();
         Appeal storage a = appeals[number_of_Appeals.current()];
         a.amount = _amount;
@@ -94,6 +97,7 @@ contract Treasury is Ownable {
         require(appeals[i].isCasted[msg.sender] == false,"Vote is Already Casted");
         require(admin!= msg.sender,"cant vote yourself");
         appeals[i].positive_votes++;
+        appeals[i].totalVotes++;
         appeals[i].isCasted[msg.sender] = true;
         finalize(i);
     }
@@ -106,6 +110,7 @@ contract Treasury is Ownable {
         require(admin != msg.sender,"cant vote yourself");
 
         appeals[i].negative_votes++;
+        appeals[i].totalVotes++;
         appeals[i].isCasted[msg.sender] = true;
         finalize(i);
 
@@ -113,7 +118,8 @@ contract Treasury is Ownable {
 
     //finalize the auction
     function finalize(uint i) internal onlySigners {
-        if(appeals[i].positive_votes >4){
+    
+        if(appeals[i].positive_votes > decisionPoint()){
             appeals[i].status = Status.ACCEPTED;
             Approved_Appeals.increment();
             allocatedAmount[i].amount =  allocatedAmount[i].amount + appeals[i].amount;
@@ -121,7 +127,7 @@ contract Treasury is Ownable {
             delete inProgress[admin];
             approved.push(i);
         } else
-        if(appeals[i].negative_votes >2){
+        if(appeals[i].totalVotes == number_of_signers.current() || appeals[i].negative_votes > decisionPoint()){
             appeals[i].status = Status.REJECTED;
             Denied_Appeals.increment();
             delete inProgress[admin];
@@ -131,14 +137,15 @@ contract Treasury is Ownable {
     }
 
     //show Appeals
-       function fetchAppeal(uint i) public view returns(
+    function fetchAppeal(uint i) public view returns(
             uint amount,
             uint8 positive_votes,
             uint8 negative_votes,
+            uint8 total_votes,
             bytes memory purpose,
             Status status){
                 require(i>0,"invalid Appeal");
-        return (appeals[i].amount,appeals[i].positive_votes,appeals[i].negative_votes,appeals[i].purpose,appeals[i].status);
+        return (appeals[i].amount,appeals[i].positive_votes,appeals[i].negative_votes,appeals[i].totalVotes,appeals[i].purpose,appeals[i].status);
     }
 
     //withdraw funds
@@ -146,7 +153,6 @@ contract Treasury is Ownable {
         // require(allocatedAmount[i].amount > 0,"no funds");
         // require(block.timestamp > allocatedAmount[i].timestamp,"fund Locked");
         // require(_amount <= allocatedAmount[i].amount,"no funds");
-        
         // uint timestamp = allocatedAmount[msg.sender].timestamp;
         // require(block.timestamp >= timestamp,"funds locked");
         // uint availableFunds = allocatedAmount[msg.sender].amount;
@@ -161,11 +167,14 @@ contract Treasury is Ownable {
     //add signers
     function addSigner(address _ad) external onlyOwner{
         signers[_ad] = true;
+        number_of_signers.increment();
     }
 
     //remove signer
     function removeSigner(address _ad) external onlyOwner {
         delete signers[_ad];
+        number_of_signers.decrement();
+
     }
 
       //check allocated fund against each appeal
@@ -214,7 +223,11 @@ contract Treasury is Ownable {
         _;
     }
 
-    //
+    //get mean 
+
+    function decisionPoint() internal view  returns(uint) {
+        return number_of_signers.current()/2;
+    }
 
 
       // Function to receive Awax. msg.data must be empty
