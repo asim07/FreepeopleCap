@@ -78,6 +78,7 @@ contract Treasury is Ownable {
     function appealforFund(uint _amount,bytes memory _purpose) external  onlyOwner returns(bool){
         require(inProgress[msg.sender]==0,"Appeal In progress");
         require(number_of_signers.current() >0,"No signers");
+        require(availableFunds() >= _amount,"funds not available");
         number_of_Appeals.increment();
         Appeal storage a = appeals[number_of_Appeals.current()];
         a.amount = _amount;
@@ -123,7 +124,7 @@ contract Treasury is Ownable {
             appeals[i].status = Status.ACCEPTED;
             Approved_Appeals.increment();
             allocatedAmount[i].amount =  allocatedAmount[i].amount + appeals[i].amount;
-            allocatedAmount[i].timestamp = block.timestamp + 10 minutes;
+            allocatedAmount[i].timestamp = block.timestamp + 7 hours;
             delete inProgress[admin];
             approved.push(i);
         } else
@@ -150,14 +151,10 @@ contract Treasury is Ownable {
 
     //withdraw funds
     function withdrawFunds(uint i ,uint _amount) public onlyOwner returns(bool){
-        // require(allocatedAmount[i].amount > 0,"no funds");
-        // require(block.timestamp > allocatedAmount[i].timestamp,"fund Locked");
-        // require(_amount <= allocatedAmount[i].amount,"no funds");
-        // uint timestamp = allocatedAmount[msg.sender].timestamp;
-        // require(block.timestamp >= timestamp,"funds locked");
-        // uint availableFunds = allocatedAmount[msg.sender].amount;
-        // require(availableFunds > 0 && _amount <= availableFunds,"No funds..");
-        // require(TreasuryAvailableFudns() >= _amount,"Funds not available");
+        require(allocatedAmount[i].amount > 0 && _amount > 0,"no funds");
+        require(block.timestamp >= allocatedAmount[i].timestamp,"fund Locked");
+        require(_amount <= allocatedAmount[i].amount,"no funds");
+        require(availableFunds() >= _amount,"no funds in contract");
         allocatedAmount[i].amount =  allocatedAmount[i].amount - _amount;
         fundHistory[msg.sender].push(_amount);
         Dai.transfer(msg.sender,_amount);
