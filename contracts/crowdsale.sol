@@ -726,7 +726,7 @@ contract ReentrancyGuard {
     }
 }
 
-contract Crowdsale is Context, ReentrancyGuard {
+contract CrowdSale is Context, ReentrancyGuard {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
@@ -734,7 +734,7 @@ contract Crowdsale is Context, ReentrancyGuard {
     IERC20 private _token;
 
     // Address where funds are collected
-    address payable private _wallet;
+    address  private _wallet;
 
     //admin of token owner
     address private _owner;
@@ -769,7 +769,7 @@ contract Crowdsale is Context, ReentrancyGuard {
      * @param wallet Address where collected funds will be forwarded to
      * @param token Address of the token being sold
      */
-    constructor (uint256 rate, address payable wallet, IERC20 token ,IERC20 _Dai)  {
+    constructor (uint256 rate, address  wallet, IERC20 token ,IERC20 _Dai)  {
         require(rate > 0, "Crowdsale: rate is 0");
         require(wallet != address(0), "Crowdsale: wallet is the zero address");
         require(address(token) != address(0), "Crowdsale: token is the zero address");
@@ -782,7 +782,7 @@ contract Crowdsale is Context, ReentrancyGuard {
     }
 
 
-    function Buys (uint amount) external payable {
+    function Buys (uint amount) external  {
         buyTokens(_msgSender(),amount);
     }
 
@@ -796,7 +796,7 @@ contract Crowdsale is Context, ReentrancyGuard {
     /**
      * @return the address where funds are collected.
      */
-    function wallet() public view returns (address payable) {
+    function wallet() public view returns (address ) {
         return _wallet;
     }
 
@@ -820,7 +820,7 @@ contract Crowdsale is Context, ReentrancyGuard {
      * another `nonReentrant` function.
      * @param beneficiary Recipient of the token purchase
      */
-    function buyTokens(address beneficiary,uint _amount) public nonReentrant payable {
+    function buyTokens(address beneficiary,uint _amount) public nonReentrant  {
         require(checkBalance(_amount),"U have insufficient Balance of Dai");
         require(checkApproval(_amount),"approve contract to spend the balance equal to purchased amount");        
         uint256 weiAmount = _amount;
