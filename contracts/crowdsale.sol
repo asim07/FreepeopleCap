@@ -769,7 +769,7 @@ contract CrowdSale is Context, ReentrancyGuard {
      * @param wallet Address where collected funds will be forwarded to
      * @param token Address of the token being sold
      */
-    constructor (uint256 rate, address  wallet, IERC20 token ,IERC20 _Dai)  {
+    constructor (uint256 rate, address  wallet, IERC20 token ,IERC20 _Dai , address _admin)  {
         require(rate > 0, "Crowdsale: rate is 0");
         require(wallet != address(0), "Crowdsale: wallet is the zero address");
         require(address(token) != address(0), "Crowdsale: token is the zero address");
@@ -777,7 +777,7 @@ contract CrowdSale is Context, ReentrancyGuard {
         _rate = rate;
         _wallet = wallet;
         _token = token;
-        _owner = msg.sender;
+        _owner = _admin;
         Dai = _Dai; 
     }
 

@@ -47,13 +47,17 @@ async function main() {
   await dai.deployed();
 
 
-  const crowdsale = await Crowdsale.deploy("1",signer1.address,fpc.address,dai.address);
+
+  const treasury = await Treasury.deploy([],dai.address,TREASURTYMainaccount);
+  await treasury.deployed();
+
+
+  const crowdsale = await Crowdsale.deploy("1",treasury.address,fpc.address,dai.address,OwnerAccount);
   await crowdsale.deployed();
 
-  const conversion = await Conversion.deploy(pangolinAddress,TREASURTYMainaccount,dai.address)
+  const conversion = await Conversion.deploy(pangolinAddress,treasury.address,dai.address)
   await conversion.deployed();
 
-  const treasury = await Treasury.deploy(address,dai.address,TREASURTYMainaccount);
 
   console.log("FPC : ",fpc.address);
   console.log("Dai : ",dai.address);
@@ -72,7 +76,7 @@ main()
     process.exit(1);
   });
 
-//   FPC :  0x778f712D2F3c6Fd94b4beD73D93fDA4091a9808e
-//   Dai :  0xa89Dbfb8c402dd3445dB4F22494eec898A366504
-//   crowdasle :  0xEc1CC7f3052D106F9c6D2Dd008D84Cea88767738
-//   Treasury :  0xD7eFe4cF091c405F809CC70a84355eDcDBD7f6D3
+//   FPC :  0xa94c3f7b08C0045E4ae252922d300e8F7bd6889a
+//   Dai :  0x26f02dB44a141B9D163ad5966B28DEC0a310aE27
+//   crowdasle :  0xCcFE166f9D05EDb4698B45A0567fbE4E72388581
+//   Treasury :  0x0AE19EFdAfb7C0f9A1c01873d9F1A31879eF4709
