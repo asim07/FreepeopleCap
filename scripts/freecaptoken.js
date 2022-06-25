@@ -55,6 +55,8 @@ async function main() {
   const crowdsale = await Crowdsale.deploy("1",treasury.address,fpc.address,dai.address,OwnerAccount);
   await crowdsale.deployed();
 
+  
+
   const conversion = await Conversion.deploy(pangolinAddress,treasury.address,dai.address)
   await conversion.deployed();
 
@@ -63,6 +65,7 @@ async function main() {
   console.log("Dai : ",dai.address);
   console.log("crowdasle : ",crowdsale.address);
   console.log("Treasury : ",treasury.address);
+  console.log("Conversion : ",conversion.address);
 
 
 }
@@ -80,3 +83,10 @@ main()
 //   Dai :  0x26f02dB44a141B9D163ad5966B28DEC0a310aE27
 //   crowdasle :  0xCcFE166f9D05EDb4698B45A0567fbE4E72388581
 //   Treasury :  0x0AE19EFdAfb7C0f9A1c01873d9F1A31879eF4709
+
+
+// FPC :  0xfbD53f0Cc3a18dEdC6c52E7650DA386B050E2dea
+// Dai :  0x9134359D82642B8BE1084E9825C091db9179c46B
+// crowdasle :  0xD54E08a6E5fe5479C3219cD6c8c42228A0E9dE91
+// Treasury :  0xcb82616F6b8b20ab5A8FFB6bf2F8eF8ae9Be9981
+// Conversion :  0x64b89e402B4aE90fFcEe19451e6a0302CD2947E5

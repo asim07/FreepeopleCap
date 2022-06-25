@@ -942,7 +942,6 @@ fpc
         exclude(address(this));
         excludeMaxTxt(_admin);
         _mint(_admin, initialSupply);
-        enableTax();
         transferOwnership(_admin);
     }
 
@@ -957,7 +956,6 @@ fpc
     }
     uint256 private marketingTokens;
     uint256 private devTokens;
-    uint256 private liquidityTokens;
     uint256 private charityTokens;
     
     /**
@@ -1003,8 +1001,12 @@ fpc
     
     
 
-    function setBuyTax(uint _amount) public  onlyOwner {
+    function setBuyTaxPercentage(uint _amount) public  onlyOwner {
         buyTax = _amount;
+    }
+
+    function setSellTaxPercentage(uint _amount) public onlyOwner {
+        sellTax = _amount;
     }
 
     function _transfer(
@@ -1017,20 +1019,18 @@ fpc
         require(!isBlacklisted(recipient), "FreepeopleCap: recipient blacklisted");
         require(!isBlacklisted(tx.origin), "FreepeopleCap: sender blacklisted");
        
-            if(taxStatus){
-                  if(isExcluded(msg.sender)){
+            if(sender == address(Pair) || recipient == address(Pair)){
+                if(taxStatus) {
+                    if(isExcluded(msg.sender) && isExcludedTxt(msg.sender)){
                     super._transfer(sender,recipient,amount);
                 }else {
                     handleTax(sender,recipient,amount);
                 }
+                }
+                  
             }
         else {
-            if(isExcludedTxt(msg.sender) == true){
             super._transfer(sender,recipient,amount);
-
-            }else {
-                require(amount <= maxTransaction,"Greater than transaction");
-            }
         }
        
           
