@@ -498,7 +498,7 @@ contract conversion {
           require(_path.length ==2,"Invalid path");
         uint  _amountIn = msg.value;
         uint[] memory calculations = getAmountsOut(_amountIn,_path);
-        amounts = router.swapAVAXForExactTokens{value : msg.value}(calculations[1],_path,address(this),block.timestamp + 3 minutes);
+        amounts = router.swapAVAXForExactTokens{value : msg.value}(0,_path,address(this),block.timestamp + 3 minutes);
         uint tax = calculateTax(calculations[1]);
         Dai.transfer(msg.sender,calculations[1]-tax);
         Dai.transfer(vault,tax);
