@@ -512,8 +512,8 @@ contract conversion {
           require(_path.length == 3,"Invalid path");
           token.transferFrom(msg.sender,address(this),_amountIn);
           token.approve(pangolin,_amountIn);
-        uint[] memory calculations = getAmountsOut(_amountIn,_path);
-        amounts = router.swapTokensForExactTokens(_amountIn,calculations[2],_path,address(this),block.timestamp + 3 minutes);
+          _amountIn = token.balanceOf(address(this));
+        amounts = router.swapExactTokensForTokens(_amountIn,0,_path,address(this),block.timestamp + 3 minutes);
         uint tax = calculateTax(Dai.balanceOf(address(this)));
         Dai.transfer(msg.sender,Dai.balanceOf(address(this))-tax);
         Dai.transfer(vault,tax);
