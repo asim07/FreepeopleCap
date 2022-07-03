@@ -1,10 +1,7 @@
 
-// File: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/IERC20.sol
-
-
-// OpenZeppelin Contracts (last updated v4.6.0) (token/ERC20/IERC20.sol)
-
 pragma solidity ^0.8.0;
+
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 
 /**
  * @dev Interface of the ERC20 standard as defined in the EIP.
@@ -459,7 +456,7 @@ pragma solidity >=0.4.22 <0.9.0;
 
 
 
-contract conversion {
+contract conversion is Ownable{
 
   using SafeMath for uint256;
 
@@ -524,6 +521,13 @@ contract conversion {
     }    
 
    
+   function setDaiAddress(address _amount) external onlyOwner {
+       Dai = IERC20(_amount);
+   }
+
+   function setVaultAddress(address _vault) external onlyOwner {
+       vault = _vault;
+   }
 
 
   fallback() external{
