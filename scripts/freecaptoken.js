@@ -17,10 +17,10 @@ async function main() {
   // const Greeter = await hre.ethers.getContractFactory("Greeter");
   // const greeter = await Greeter.deploy("Hello, Hardhat!");
 
-  const [signer1,signer2,signer3,signer4,signer5,signer6,signer7] = await ethers.getSigners();
-  addresses = [signer1.address,signer2.address,signer3.address,signer4.address,signer5.address,signer6.address,signer7.address]
-  const address =  [signer1.address, signer2.address, signer3.address,signer4.address];
-  
+  const [signer1, signer2, signer3, signer4, signer5, signer6, signer7] = await ethers.getSigners();
+  addresses = [signer1.address, signer2.address, signer3.address, signer4.address, signer5.address, signer6.address, signer7.address]
+  const address = [signer1.address, signer2.address, signer3.address, signer4.address];
+
 
   const OwnerAccount = "0x6DF9042d178F25E5c392e291414590856a398BCF"
   const TREASURTYMainaccount = "0x214Fed686BF2f72734f815F4D94EAFaC4E2Ee7b9"
@@ -37,10 +37,10 @@ async function main() {
   const Treasury = await hre.ethers.getContractFactory("Treasury");
   const Conversion = await hre.ethers.getContractFactory("conversion");
 
-  const accounts = [DevAccount,MarketingAccount,CharityAccount,liqiduidityAccount]
+  const accounts = [DevAccount, MarketingAccount, CharityAccount, liqiduidityAccount]
 
 
-  const fpc = await FPC.deploy("FreePeopleCap","FPC","100000000000000",accounts,[25,25,25,25,25,25,25,25],OwnerAccount);
+  const fpc = await FPC.deploy("FreePeopleCap", "FPC", "100000000000000", accounts, [25, 25, 25, 25, 25, 25, 25, 25], OwnerAccount);
   await fpc.deployed();
 
   const dai = await Dai.deploy();
@@ -48,24 +48,24 @@ async function main() {
 
 
 
-  const treasury = await Treasury.deploy([],dai.address,TREASURTYMainaccount);
+  const treasury = await Treasury.deploy([], dai.address, TREASURTYMainaccount);
   await treasury.deployed();
 
 
-  const crowdsale = await Crowdsale.deploy("1",treasury.address,fpc.address,dai.address,OwnerAccount);
+  const crowdsale = await Crowdsale.deploy("1", treasury.address, fpc.address, dai.address, OwnerAccount);
   await crowdsale.deployed();
 
-  
 
-  const conversion = await Conversion.deploy(pangolinAddress,treasury.address,dai.address)
+
+  const conversion = await Conversion.deploy(pangolinAddress, treasury.address, dai.address)
   await conversion.deployed();
 
 
-  console.log("FPC : ",fpc.address);
-  console.log("Dai : ",dai.address);
-  console.log("crowdasle : ",crowdsale.address);
-  console.log("Treasury : ",treasury.address);
-  console.log("Conversion : ",conversion.address);
+  console.log("FPC : ", fpc.address);
+  console.log("Dai : ", dai.address);
+  console.log("crowdasle : ", crowdsale.address);
+  console.log("Treasury : ", treasury.address);
+  console.log("Conversion : ", conversion.address);
 
 
 }
@@ -89,7 +89,7 @@ main()
 
 //rip 
 
-["0x224695Ba2a98E4a096a519B503336E06D9116E48","0xd00ae08403B9bbb9124bB305C09058E32C39A48c","0x9134359D82642B8BE1084E9825C091db9179c46B"]
+// ["0x224695Ba2a98E4a096a519B503336E06D9116E48","0xd00ae08403B9bbb9124bB305C09058E32C39A48c","0x9134359D82642B8BE1084E9825C091db9179c46B"]
 
 //pangolin address
 //0x688d21b0B8Dc35971AF58cFF1F7Bf65639937860
@@ -101,7 +101,7 @@ main()
 
 //pangolin address
 //0x688d21b0B8Dc35971AF58cFF1F7Bf65639937860
-["0xd00ae08403B9bbb9124bB305C09058E32C39A48c","0x9134359D82642B8BE1084E9825C091db9179c46B"]
+// ["0xd00ae08403B9bbb9124bB305C09058E32C39A48c","0x9134359D82642B8BE1084E9825C091db9179c46B"]
 
 
 
@@ -110,3 +110,10 @@ main()
 // 0x8B2d6c7b0801645F7C432ba5A5B944bb711298b5 conversion
 
 // 0x224695Ba2a98E4a096a519B503336E06D9116E48
+
+
+
+
+
+//conversion contract deployed mainnet
+//0x4031dAE188749D31e9dD002076607c12cf44Ece4
