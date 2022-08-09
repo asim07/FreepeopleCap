@@ -30,13 +30,14 @@ module.exports = {
       url: POLYGON_MUMBAI_RPC_PROVIDER,
       accounts: {
         mnemonic: process.env.MNEMONIC
-      }},
-    fuji : {
+      }
+    },
+    fuji: {
       url: FUJI_AVALACHE_RPC_PROVIDER,
       accounts: {
         mnemonic: process.env.MNEMONIC
       }
     }
-    },
+  },
   etherscan: { apiKey: AVALACHE_API_KEY },
 };

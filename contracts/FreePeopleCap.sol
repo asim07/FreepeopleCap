@@ -898,7 +898,7 @@ contract FreePeopleCap is ERC20,  Ownable , Pausable{
     
     // IPangolinRouter private Router;
     // IPangolinFactory private Factory;
-    IPangolinPair public Pair;    
+    address public Pair;    
 
  /**
      * @dev Sets tax for sells.
@@ -946,7 +946,7 @@ fpc
     }
 
     function setPAir(address _ad) external onlyOwner {
-        Pair = IPangolinPair(_ad);
+        Pair = _ad;
     }
 
     event check(uint amount ,uint remainingamount, uint taxAmount ,uint buytax);
@@ -1019,7 +1019,7 @@ fpc
         require(!isBlacklisted(recipient), "FreepeopleCap: recipient blacklisted");
         require(!isBlacklisted(tx.origin), "FreepeopleCap: sender blacklisted");
        
-            if(sender == address(Pair) || recipient == address(Pair)){
+            if(sender == Pair || recipient == Pair){
                 if(taxStatus) {
                     if(isExcluded(msg.sender) && isExcludedTxt(msg.sender)){
                     super._transfer(sender,recipient,amount);
