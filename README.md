@@ -16,8 +16,28 @@ npx hardhat accounts
 npx hardhat compilechange
 npx hardhat clean
 npx hardhat test
-npx hardhat test --network localhost
+npx hardhat test --network localhost/provided one
 npx hardhat node
 node scripts/treasury-script.js
 npx hardhat help
 ```
+
+
+
+```folders
+├──├──├──├──├──├──├──├──├──
+scripts/freecaptoken.js
+used to deploy the smart contracts to a network
+
+├──├──├──├──├──├──├──├──├──
+test/
+script used for the testcases
+
+
+```requirements
+yarn install/ npm i
+
+create .env file having parameters
+MNEMONIC=""
+FUJI_AVALACHE_RPC_PROVIDER="https://api.avax-test.network/ext/bc/C/rpc"
+AVALACHE_API_KEY=""
