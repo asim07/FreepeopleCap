@@ -29,9 +29,23 @@ npx hardhat help
 scripts/freecaptoken.js
 used to deploy the smart contracts to a network
 
+
+├──├──├──├──├──├──├──├──├──
+arguments/
+after the deployment for verification these arguments are used to verify the contract for each contract.
+
+
 ├──├──├──├──├──├──├──├──├──
 test/
 script used for the testcases
+
+├──├──├──├──├──├──├──├──├──
+contracts contains the all required contracts for FPC token
+1. FREEPEOPLECAP.sol (token contract)
+2. CONVERSION.sol (Used to swap one token to other using pangolin exchange smart contract  )
+3. Treasury.sol (Lates version for reserves)
+4. CROWDSALE.sol (for selling of fpc token with dai on private website)
+
 
 
 ```requirements
