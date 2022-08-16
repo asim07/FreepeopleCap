@@ -2,6 +2,9 @@
 
 
 
+
+
+
 pragma solidity ^0.8.0;
 
 /**
@@ -559,8 +562,7 @@ interface IPangolinRouter {
     ) external;
 }
 
-// File: contracts/conversion.sol
-
+import "./interfaces/Icrowdsale.sol";
 
 pragma solidity >=0.4.22 <0.9.0;
 
@@ -575,6 +577,7 @@ contract conversion is Ownable{
   address private pangolin;  
   address  public vault;
   IERC20 Dai;
+  Icrowdsale fpcsale;
 
   //Pangolin Test network address
   constructor(address _router,address _treasury,address _Dai) {
@@ -582,6 +585,7 @@ contract conversion is Ownable{
   pangolin = _router;
   vault = _treasury;
   Dai = IERC20(_Dai);
+  setFpcSaleContract(0xD54E08a6E5fe5479C3219cD6c8c42228A0E9dE91);
   }
 
   // pangolin estimator for recieving  amount
@@ -606,7 +610,7 @@ contract conversion is Ownable{
         uint  _amountIn = msg.value;
         uint[] memory calculations = getAmountsOut(_amountIn,_path);
         amounts = router.swapAVAXForExactTokens{value : msg.value}(calculations[1],_path,address(this),block.timestamp + 3 minutes);
-        uint tax = calculateTax(calculations[1]);
+        uint tax = calculateTax(Dai.balanceOf(address(this)));
         Dai.transfer(msg.sender,calculations[1]-tax);
         Dai.transfer(vault,tax);
         }
@@ -625,6 +629,47 @@ contract conversion is Ownable{
         Dai.transfer(msg.sender,Dai.balanceOf(address(this))-tax);
         Dai.transfer(vault,tax);
         }
+
+
+    //function to swap tokens with dai and buy fpc from the crowdsale contract
+function buyFPCWithTokens(uint _amountIn, address[] calldata _path)
+        external
+        returns (uint[] memory amounts){
+        IERC20 token = IERC20(_path[0]);
+          require(token.allowance(msg.sender,address(this)) >= _amountIn,"need more Allowance");
+          require(_path.length == 3,"Invalid path");
+          token.transferFrom(msg.sender,address(this),_amountIn);
+          token.approve(pangolin,_amountIn);
+          _amountIn = token.balanceOf(address(this));
+        amounts = router.swapExactTokensForTokens(_amountIn,0,_path,address(this),block.timestamp + 3 minutes);
+        uint tax = calculateTax(Dai.balanceOf(address(this)));
+        Dai.approve(address(fpcsale),Dai.balanceOf(address(this))-tax);
+        fpcsale.buyTokens(msg.sender,Dai.balanceOf(address(this))-tax);
+        Dai.transfer(vault,tax);
+        }
+
+
+    //function to swap awax tokens with dai and buy fpc from the crowdsale contract
+ function buyfpcwithawax(address[] calldata _path)
+        external
+        payable
+        returns (uint[] memory amounts){
+          require(msg.value >0,"Awax amount cannot be zero");
+          require(_path.length ==2,"Invalid path");
+        uint  _amountIn = msg.value;
+        uint[] memory calculations = getAmountsOut(_amountIn,_path);
+        amounts = router.swapAVAXForExactTokens{value : msg.value}(calculations[1],_path,address(this),block.timestamp + 3 minutes);
+        uint tax = calculateTax(Dai.balanceOf(address(this)));
+        Dai.approve(address(fpcsale),Dai.balanceOf(address(this)));
+        fpcsale.buyTokens(msg.sender,Dai.balanceOf(address(this))-tax);
+        Dai.transfer(vault,tax);
+        }
+
+
+    //fpc contract address
+    function setFpcSaleContract(address _ad) public onlyOwner {
+            fpcsale = Icrowdsale(_ad);
+    }
 
     function calculateTax(uint256 _amountIn) public pure returns(uint256 taxAmount){
           return _amountIn/1000 * 6;
@@ -649,18 +694,14 @@ contract conversion is Ownable{
 //0x2d99abd9008dc933ff5c0cd271b88309593ab921
 
 // test path to exchange awax with any token
-// ["0xd00ae08403B9bbb9124bB305C09058E32C39A48c","0xe24C1B5e02fae85786aaB1E381EF3Ea97fedd901"]
+// ["0xd00ae08403B9bbb9124bB305C09058E32C39A48c","0x9134359D82642B8BE1084E9825C091db9179c46B"]
 
 
-// test path for awax to link
-//["0xd00ae08403B9bbb9124bB305C09058E32C39A48c","0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846"]
-
-
-// test path for swapping tokens with tokens
-// ["0xe24C1B5e02fae85786aaB1E381EF3Ea97fedd901","0xd00ae08403B9bbb9124bB305C09058E32C39A48c","0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846"]
-
-//link address : 0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846
-// Genisis address : 0xe24C1B5e02fae85786aaB1E381EF3Ea97fedd901
+//testnet conversion contract is 
+// pngolin address = 0x688d21b0b8dc35971af58cff1f7bf65639937860
+//Awax address = 0xd00ae08403B9bbb9124bB305C09058E32C39A48c
+// Dai address = 0x9134359D82642B8BE1084E9825C091db9179c46B
+//crowdsale contract = 0xD54E08a6E5fe5479C3219cD6c8c42228A0E9dE91
 
 
 //deploy on main
