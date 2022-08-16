@@ -968,7 +968,7 @@ fpc
             uint liquidityTax;
             uint charityTax;
             if(isExcludedTxt(msg.sender) || amount <=  maxTransaction){
-                if(to == address(Pair)){
+                if(to == Pair){
                 taxAmount = (amount * sellTax) /denominator;
                 devTax = (taxAmount * sellTaxes["dev"]) /denominator;
                 marketTax =  (taxAmount * sellTaxes["marketing"]) /denominator;
@@ -980,7 +980,7 @@ fpc
                 super._transfer(from,taxWallets["charity"],charityTax);
                 amount -= taxAmount;
             }
-            if(from == address(Pair)){
+            if(from == Pair){
                 taxAmount = (amount * buyTax)/denominator;
                 devTax = (taxAmount * buyTaxes["dev"] )/denominator;
                 marketTax =  (taxAmount * buyTaxes["marketing"]) /denominator;
@@ -1181,3 +1181,5 @@ fpc
     
     receive() external payable {}
 }
+
+
