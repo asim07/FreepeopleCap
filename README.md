@@ -55,3 +55,16 @@ create .env file having parameters
 MNEMONIC=""
 FUJI_AVALACHE_RPC_PROVIDER="https://api.avax-test.network/ext/bc/C/rpc"
 AVALACHE_API_KEY=""
+
+
+
+
+
+`````addresses fuji testnet
+crowdsale : 0xd54e08a6e5fe5479c3219cd6c8c42228a0e9de91
+FPC : 0xfbD53f0Cc3a18dEdC6c52E7650DA386B050E2dea
+DAI : 0x9134359D82642B8BE1084E9825C091db9179c46B
+router : 0x7791E98C3eC430eacd5B62843dA16Ff8bb462FB2
+
+path to buy fpc with awax 
+["0xd00ae08403B9bbb9124bB305C09058E32C39A48c","0x9134359D82642B8BE1084E9825C091db9179c46B"]
